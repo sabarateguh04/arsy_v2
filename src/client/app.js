@@ -585,10 +585,33 @@
     }
 
     function surveyWhen(date) {
+      const value = date instanceof Date ? date : new Date(date);
       return {
-        day: date.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
-        time: date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
+        day: value.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
+        time: value.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
       };
+    }
+
+    function readPhoto(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({ name: file.name, data: reader.result });
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function persistGrants() {
+      try {
+        const response = await fetch("/api/grants", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(menuGrants)
+        });
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
     }
 
     function renderSurveyTable() {
@@ -2477,11 +2500,11 @@
         note.textContent = "Lokasi tidak bisa diambil. Izinkan akses lokasi, lalu coba lagi.";
       });
     });
-    document.getElementById("surveyForm").addEventListener("submit", (event) => {
+    document.getElementById("surveyForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       const photos = document.getElementById("surveyPhoto");
+      const note = document.getElementById("surveyFiles");
       if (!photos.files.length || photos.files.length > 3) {
-        const note = document.getElementById("surveyFiles");
         note.className = "mt-3 text-sm text-red-600";
         note.classList.remove("hidden");
         note.textContent = "Lampirkan 1 sampai 3 foto.";
@@ -2489,30 +2512,44 @@
       }
       const cause = document.getElementById("surveyCause").value;
       const other = document.getElementById("surveyOther").value.trim();
-      surveyReports.unshift({
-        id: Date.now(),
-        at: new Date(),
-        officer: session ? session.name : "",
-        polda: document.getElementById("surveyPolda").value,
-        polres: document.getElementById("surveyPolres").value,
-        poldaKey: session ? (session.polda || poldaKey(session.provinsi) || "") : "",
-        kota: session && session.kota ? session.kota : "",
-        giat: document.getElementById("surveyGiat").value,
-        tingkat: document.getElementById("surveyTingkat").value,
-        rawan: document.getElementById("surveyRawan").value,
-        faktor: document.getElementById("surveyFaktor").value,
-        penyebab: cause === "Lainnya" ? other : cause,
-        road: document.getElementById("surveyRoad").value.trim(),
-        coord: document.getElementById("surveyCoord").value.trim(),
-        detail: document.getElementById("surveyDetail").value.trim(),
-        photos: [...photos.files].map((file) => ({ name: file.name, url: URL.createObjectURL(file) }))
-      });
+      let saved;
+      try {
+        const encoded = await Promise.all([...photos.files].map(readPhoto));
+        const response = await fetch("/api/reports", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            officer: session ? session.name : "",
+            polda: document.getElementById("surveyPolda").value,
+            polres: document.getElementById("surveyPolres").value,
+            poldaKey: session ? (session.polda || poldaKey(session.provinsi) || "") : "",
+            kota: session && session.kota ? session.kota : "",
+            giat: document.getElementById("surveyGiat").value,
+            tingkat: document.getElementById("surveyTingkat").value,
+            rawan: document.getElementById("surveyRawan").value,
+            faktor: document.getElementById("surveyFaktor").value,
+            penyebab: cause === "Lainnya" ? other : cause,
+            road: document.getElementById("surveyRoad").value.trim(),
+            coord: document.getElementById("surveyCoord").value.trim(),
+            detail: document.getElementById("surveyDetail").value.trim(),
+            photos: encoded
+          })
+        });
+        if (!response.ok) throw new Error("save");
+        saved = await response.json();
+      } catch (error) {
+        note.className = "mt-3 text-sm text-red-600";
+        note.classList.remove("hidden");
+        note.textContent = "Laporan belum tersimpan. Coba lagi.";
+        return;
+      }
+      surveyReports.unshift(saved);
       const done = document.getElementById("surveyDone");
       done.classList.remove("hidden");
       document.getElementById("surveyForm").reset();
       fillSurveyCause();
       paintSurvey();
-      document.getElementById("surveyFiles").classList.add("hidden");
+      note.classList.add("hidden");
       document.getElementById("surveyResult").scrollIntoView({ block: "nearest" });
     });
     document.getElementById("surveyRows").addEventListener("click", (event) => {
@@ -2526,11 +2563,12 @@
       }
       if (del) {
         const id = Number(del.dataset.surveyDel);
-        const row = surveyReports.find((item) => item.id === id);
-        if (row) row.photos.forEach((photo) => URL.revokeObjectURL(photo.url));
-        surveyReports = surveyReports.filter((item) => item.id !== id);
-        surveyOpen.delete(id);
-        renderSurveyTable();
+        fetch("/api/reports/" + id, { method: "DELETE" }).then((response) => {
+          if (!response.ok) return;
+          surveyReports = surveyReports.filter((item) => item.id !== id);
+          surveyOpen.delete(id);
+          renderSurveyTable();
+        });
       }
     });
     document.getElementById("primerAdd").addEventListener("click", () => showLeafForm(-1));
@@ -2598,7 +2636,8 @@
       showPage("publicPortal");
     });
 
-    function attemptLogin(email, password) {
+    async function attemptLogin(email, password) {
+      await stateReady;
       const found = users.find((user) => user.email.toLowerCase() === String(email || "").trim().toLowerCase() && user.password === password && user.status === "Aktif");
       const error = document.getElementById("loginError");
       if (!found) {
@@ -2630,6 +2669,18 @@
     }
 
     menuGrants = buildDefaultGrants();
+    const stateReady = fetch("/api/state").then(async (response) => {
+      if (!response.ok) return;
+      const data = await response.json();
+      if (Array.isArray(data.reports)) surveyReports = data.reports;
+      if (data.grants && typeof data.grants === "object") {
+        const defaults = buildDefaultGrants();
+        ACCESS_ROLES.forEach((role) => {
+          defaults[role] = Object.assign(defaults[role], data.grants[role] || {});
+        });
+        menuGrants = defaults;
+      }
+    }).catch(() => undefined);
     document.getElementById("loginForm").addEventListener("submit", (event) => {
       event.preventDefault();
       attemptLogin(document.getElementById("loginEmail").value, document.getElementById("passwordInput").value);
@@ -2646,10 +2697,15 @@
       if (!box || !menuGrants[box.dataset.grantRole]) return;
       menuGrants[box.dataset.grantRole][box.dataset.grantKey] = box.checked;
       applyMenuAccess();
+      persistGrants();
       document.getElementById("menuGrantNote").textContent = "Akses diperbarui. Masuk dengan peran itu untuk melihat menunya.";
     });
-    document.getElementById("menuGrantSave").addEventListener("click", () => {
-      document.getElementById("menuGrantNote").textContent = "Tersimpan. Menu tiap peran langsung mengikuti pengaturan ini.";
+    document.getElementById("menuGrantSave").addEventListener("click", async () => {
+      const note = document.getElementById("menuGrantNote");
+      const saved = await persistGrants();
+      note.textContent = saved
+        ? "Tersimpan. Menu tiap peran langsung mengikuti pengaturan ini."
+        : "Belum tersimpan. Coba lagi.";
     });
     document.getElementById("userRole").addEventListener("change", () => {
       syncUserScopeFields({
