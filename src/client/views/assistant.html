@@ -1,0 +1,28 @@
+<div id="aiChat" class="ai-chat">
+    <section id="aiPanel" class="ai-panel" hidden aria-label="Asisten ARSY">
+      <header class="ai-head">
+        <span class="ai-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+        <div>
+          <p class="ai-kicker">Asisten AI</p>
+          <strong>ARSY</strong>
+        </div>
+        <button type="button" id="aiClose" aria-label="Tutup asisten"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div id="aiLog" class="ai-log"></div>
+      <div class="ai-chips">
+        <button type="button" data-ai-ask="CFR hari ini">CFR hari ini</button>
+        <button type="button" data-ai-ask="Buka peta">Buka peta</button>
+        <button type="button" data-ai-ask="Menu data master">Data master</button>
+      </div>
+      <form id="aiForm" class="ai-form">
+        <input id="aiInput" type="text" placeholder="Tanya kondisi jalan..." autocomplete="off" aria-label="Pesan untuk asisten">
+        <button type="submit" aria-label="Kirim"><i class="fa-solid fa-paper-plane"></i></button>
+      </form>
+    </section>
+    <button type="button" id="aiToggle" class="ai-toggle" aria-expanded="false" aria-controls="aiPanel" aria-label="Buka asisten AI">
+      <i class="fa-solid fa-comment-dots"></i>
+      <span class="ai-spark"><i class="fa-solid fa-sparkles"></i></span>
+    </button>
+  </div>
+
+  

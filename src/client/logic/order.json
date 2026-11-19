@@ -1,0 +1,11 @@
+[
+  "01-shared.js",
+  "02-access.js",
+  "03-navigation.js",
+  "04-survey.js",
+  "05-map.js",
+  "06-users.js",
+  "07-chrome.js",
+  "08-safety.js",
+  "09-session.js"
+]

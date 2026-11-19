@@ -1,0 +1,52 @@
+<section id="viewKelancaran" data-view class="absolute inset-0 hidden-section overflow-auto p-4 md:p-6">
+          <div class="mb-6">
+            <h2 class="text-2xl font-semibold text-slate-900">Kelancaran</h2>
+            <p class="mt-1 text-sm text-slate-500">Indeks kemacetan per jam pada hari operasional ini. 0 lancar, 100 macet total.</p>
+          </div>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <article class="rounded-xl border border-slate-200 bg-white p-5">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-sm text-slate-500">Indeks saat ini</p>
+                  <p class="mt-1 text-3xl font-semibold text-slate-900">64</p>
+                </div>
+                <span class="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-brand-blue"><i class="fa-solid fa-gauge-high"></i></span>
+              </div>
+              <p class="mt-4 text-xs font-medium text-brand-orange">Padat menjelang sore</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-white p-5">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-sm text-slate-500">Kecepatan rata-rata</p>
+                  <p class="mt-1 text-3xl font-semibold text-slate-900">27<span class="text-lg font-medium text-slate-400"> km/j</span></p>
+                </div>
+                <span class="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-brand-blue"><i class="fa-solid fa-tachograph-digital"></i></span>
+              </div>
+              <p class="mt-4 text-xs font-medium text-slate-500">Koridor arteri utama</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-white p-5">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-sm text-slate-500">Koridor padat</p>
+                  <p class="mt-1 text-3xl font-semibold text-slate-900">6</p>
+                </div>
+                <span class="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-brand-blue"><i class="fa-solid fa-road"></i></span>
+              </div>
+              <p class="mt-4 text-xs font-medium text-slate-500">Sudirman, Gatot Subroto, Cawang</p>
+            </article>
+          </div>
+          <div class="mt-5 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <div class="mb-4 flex items-center justify-between">
+              <div>
+                <h3 class="font-semibold text-slate-900">Kemacetan per jam</h3>
+                <p class="text-xs text-slate-500">0 lancar, 100 macet total</p>
+              </div>
+              <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-brand-blue">Hari ini</span>
+            </div>
+            <div class="relative h-80">
+              <canvas id="chartKelancaran"></canvas>
+            </div>
+          </div>
+        </section>
+
+        

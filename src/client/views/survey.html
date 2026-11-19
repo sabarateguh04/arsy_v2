@@ -1,0 +1,151 @@
+<section id="viewSurvey" data-view class="absolute inset-0 hidden-section overflow-auto bg-[#e7eef6] px-4 pb-28 pt-4 md:px-6 md:pt-6">
+          <div class="mx-auto max-w-6xl">
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f97316]">Smart Survey</p>
+            <h2 class="mt-1 text-2xl font-semibold text-[#0b1f4a]">Input Data Gangguan</h2>
+            <p class="mt-1 text-sm text-slate-500">Laporan PG, AG, dan GN dari petugas di lapangan. Data sesi mengikuti akun yang sedang masuk.</p>
+            <p id="surveyDone" class="mt-4 hidden rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">Laporan masuk ke tabel hasil.</p>
+            <form id="surveyForm" class="mt-5 space-y-4">
+              <div class="rounded-3xl border border-[#c5d4ea] bg-white p-5 shadow-[0_8px_24px_rgba(15,35,70,0.06)]">
+                <h3 class="flex items-center gap-2 text-sm font-semibold text-[#0b1f4a]"><i class="fa-solid fa-user-shield text-brand-blue"></i> Data sesi</h3>
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                  <label class="block text-sm font-medium text-slate-600">Tanggal laporan
+                    <input id="surveyDate" type="text" readonly class="survey-input mt-1.5">
+                  </label>
+                  <label class="block text-sm font-medium text-slate-600">Petugas
+                    <input id="surveyOfficer" type="text" readonly class="survey-input mt-1.5">
+                  </label>
+                  <label class="block text-sm font-medium text-slate-600">Polda
+                    <input id="surveyPolda" type="text" readonly class="survey-input mt-1.5">
+                  </label>
+                  <label class="block text-sm font-medium text-slate-600">Polres
+                    <input id="surveyPolres" type="text" readonly class="survey-input mt-1.5">
+                  </label>
+                </div>
+              </div>
+              <div class="rounded-3xl border border-[#c5d4ea] bg-white p-5 shadow-[0_8px_24px_rgba(15,35,70,0.06)]">
+                <h3 class="flex items-center gap-2 text-sm font-semibold text-[#0b1f4a]"><i class="fa-solid fa-tags text-[#f97316]"></i> Klasifikasi</h3>
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                  <label class="block text-sm font-medium text-slate-600">Jenis giat <span class="text-red-500">*</span>
+                    <select id="surveyGiat" required class="survey-input mt-1.5">
+                      <option value="" disabled selected>Pilih jenis giat</option>
+                      <option>Update Data</option>
+                      <option>Survei</option>
+                      <option>Inspeksi</option>
+                    </select>
+                  </label>
+                  <label class="block text-sm font-medium text-slate-600">Tingkat gangguan <span class="text-red-500">*</span>
+                    <select id="surveyTingkat" required class="survey-input mt-1.5">
+                      <option value="" disabled selected>Pilih tingkat</option>
+                      <option value="PG">Potensi Gangguan (PG)</option>
+                      <option value="AG">Ambang Gangguan (AG)</option>
+                      <option value="GN">Gangguan Nyata (GN)</option>
+                    </select>
+                  </label>
+                  <label class="block text-sm font-medium text-slate-600 sm:col-span-2">Status kerawanan <span class="text-red-500">*</span>
+                    <select id="surveyRawan" required class="survey-input mt-1.5">
+                      <option value="" disabled selected>Pilih status kerawanan</option>
+                      <option>Rawan Laka</option>
+                      <option>Rawan Perlambatan</option>
+                      <option>Rawan Bencana</option>
+                      <option>Rawan Langgar</option>
+                      <option>Rawan Tindak Pidana</option>
+                      <option>Black Spot</option>
+                      <option>Trouble Spot</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div class="rounded-3xl border border-[#c5d4ea] bg-white p-5 shadow-[0_8px_24px_rgba(15,35,70,0.06)]">
+                <h3 class="flex items-center gap-2 text-sm font-semibold text-[#0b1f4a]"><i class="fa-solid fa-diagram-project text-brand-blue"></i> Identifikasi dan penyebab</h3>
+                <div class="mt-4 space-y-4">
+                  <label class="block text-sm font-medium text-slate-600">Faktor <span class="text-red-500">*</span>
+                    <select id="surveyFaktor" required class="survey-input mt-1.5">
+                      <option value="" disabled selected>Pilih faktor</option>
+                      <option>Alam</option>
+                      <option>Jalan</option>
+                      <option>Giat Masyarakat</option>
+                      <option>Prasarana Jalan</option>
+                      <option>Kendaraan</option>
+                      <option>Peraturan</option>
+                      <option>Pengemudi</option>
+                      <option>Infrastruktur</option>
+                      <option>Giat Kenegaraan</option>
+                    </select>
+                  </label>
+                  <label id="surveyCauseWrap" class="hidden block text-sm font-medium text-slate-600">Penyebab <span class="text-red-500">*</span>
+                    <select id="surveyCause" class="survey-input mt-1.5"></select>
+                  </label>
+                  <label id="surveyOtherWrap" class="hidden block text-sm font-medium text-slate-600">Sebutkan penyebab lainnya <span class="text-red-500">*</span>
+                    <input id="surveyOther" type="text" class="survey-input mt-1.5" placeholder="Tulis penyebab secara spesifik">
+                  </label>
+                </div>
+              </div>
+              <div class="rounded-3xl border border-[#c5d4ea] bg-white p-5 shadow-[0_8px_24px_rgba(15,35,70,0.06)]">
+                <h3 class="flex items-center gap-2 text-sm font-semibold text-[#0b1f4a]"><i class="fa-solid fa-location-dot text-[#f97316]"></i> Lokasi</h3>
+                <div class="mt-4 space-y-4">
+                  <label class="block text-sm font-medium text-slate-600">Nama jalan <span class="text-red-500">*</span>
+                    <input id="surveyRoad" type="text" required class="survey-input mt-1.5" placeholder="Contoh: Jl. Jend. Sudirman KM 5">
+                  </label>
+                  <div>
+                    <label class="block text-sm font-medium text-slate-600" for="surveyCoord">Koordinat <span class="text-red-500">*</span></label>
+                    <div class="mt-1.5 flex gap-2">
+                      <input id="surveyCoord" type="text" required class="survey-input" placeholder="-6.2088, 106.8456">
+                      <button type="button" id="surveyGps" class="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[#1e3a8a] bg-[#e7eef8] text-[#1e3a8a] hover:bg-[#1e3a8a] hover:text-white" title="Ambil lokasi saat ini" aria-label="Ambil lokasi saat ini"><i class="fa-solid fa-crosshairs"></i></button>
+                    </div>
+                    <p id="surveyGpsMsg" class="mt-1 text-xs text-slate-500">Tombol target mengisi koordinat dari perangkat.</p>
+                  </div>
+                  <label class="block text-sm font-medium text-slate-600">Keterangan <span class="text-red-500">*</span>
+                    <textarea id="surveyDetail" rows="3" required class="survey-input mt-1.5 resize-none" placeholder="Kronologi, situasi, atau keterangan pendukung"></textarea>
+                  </label>
+                </div>
+              </div>
+              <div class="rounded-3xl border border-[#c5d4ea] bg-white p-5 shadow-[0_8px_24px_rgba(15,35,70,0.06)]">
+                <h3 class="flex items-center gap-2 text-sm font-semibold text-[#0b1f4a]"><i class="fa-solid fa-camera text-brand-blue"></i> Foto</h3>
+                <label class="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#1e3a8a]/40 bg-[#e7eef8] px-4 py-8 text-center hover:border-[#1e3a8a] hover:bg-[#dce7f6]">
+                  <i class="fa-solid fa-cloud-arrow-up text-2xl text-[#1e3a8a]"></i>
+                  <span class="mt-2 text-sm font-medium text-[#0b1f4a]">Pilih foto dokumentasi</span>
+                  <span class="mt-1 text-xs text-slate-500">PNG atau JPG, paling banyak 3 foto</span>
+                  <input id="surveyPhoto" type="file" accept="image/*" multiple required class="sr-only">
+                </label>
+                <p id="surveyFiles" class="mt-3 hidden text-sm"></p>
+              </div>
+              <div class="flex justify-end pb-2">
+                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-brand-blue px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-blue-900">Simpan data <i class="fa-solid fa-paper-plane text-xs"></i></button>
+              </div>
+            </form>
+          </div>
+          <section id="surveyResult" class="mt-6 overflow-hidden rounded-3xl border border-[#c5d4ea] bg-white shadow-[0_8px_24px_rgba(15,35,70,0.06)]">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#e7eef6] px-5 py-4">
+              <div>
+                <h3 class="flex items-center gap-2 text-sm font-semibold text-[#0b1f4a]"><i class="fa-solid fa-table-list text-brand-blue"></i> Hasil laporan</h3>
+                <p id="surveyCount" class="mt-1 text-xs text-slate-500">Belum ada laporan di sesi ini.</p>
+              </div>
+              <div id="surveyTally" class="flex gap-1.5 text-[11px] font-semibold"></div>
+            </div>
+            <div id="surveyEmpty" class="px-5 py-14 text-center">
+              <span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[#e7eef8] text-[#1e3a8a]"><i class="fa-solid fa-clipboard-list"></i></span>
+              <p class="mt-3 text-sm font-semibold text-[#0b1f4a]">Belum ada laporan</p>
+              <p class="mt-1 text-xs text-slate-500">Setelah disimpan, laporan muncul di tabel ini.</p>
+            </div>
+            <div id="surveyTableWrap" class="hidden overflow-x-auto">
+              <table class="w-full min-w-[36rem] text-left text-sm">
+                <thead>
+                  <tr class="border-b border-[#e7eef6] bg-[#f7f9fc] text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                    <th class="px-4 py-3 font-semibold">Waktu</th>
+                    <th class="px-4 py-3 font-semibold">Tingkat</th>
+                    <th class="px-4 py-3 font-semibold">Lokasi</th>
+                    <th class="px-4 py-3 font-semibold">Penyebab</th>
+                    <th class="hidden px-4 py-3 font-semibold md:table-cell">Petugas</th>
+                    <th class="px-4 py-3 font-semibold">Foto</th>
+                    <th class="px-4 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody id="surveyRows"></tbody>
+              </table>
+            </div>
+          </section>
+          </div>
+        </section>
+
+        

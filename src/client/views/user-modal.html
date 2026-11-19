@@ -1,0 +1,62 @@
+<!-- User modal -->
+  <div id="userModal" class="hidden-section fixed inset-0 z-[80] flex items-end justify-center p-4 sm:items-center">
+    <div class="absolute inset-0 bg-slate-900/50" data-close-user></div>
+    <form id="userForm" class="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-brand-orange">User Management</p>
+          <h3 id="userModalTitle" class="mt-1 text-xl font-semibold text-slate-900">Tambah pengguna</h3>
+        </div>
+        <button type="button" data-close-user class="grid h-9 w-9 place-items-center rounded-xl text-slate-400 hover:bg-slate-100" aria-label="Tutup">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <p id="userDeleteHint" class="hidden-section mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">Pengguna ini akan dihapus dari daftar simulasi.</p>
+      <div class="mt-5 grid gap-4 sm:grid-cols-2">
+        <label class="block text-sm font-medium text-slate-700 sm:col-span-2">
+          Nama
+          <input id="userName" required class="mt-1.5 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20">
+        </label>
+        <label class="block text-sm font-medium text-slate-700 sm:col-span-2">
+          Email
+          <input id="userEmail" type="email" required class="mt-1.5 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20">
+        </label>
+        <label class="block text-sm font-medium text-slate-700 sm:col-span-2">
+          Kata sandi
+          <input id="userPassword" type="text" autocomplete="off" placeholder="arsy1234" class="mt-1.5 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20">
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          Peran
+          <select id="userRole" class="mt-1.5 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20">
+            <option>Admin</option>
+            <option selected>Operator</option>
+            <option>Eksekutif 1</option>
+            <option>Eksekutif 2</option>
+            <option>Eksekutif 3</option>
+          </select>
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          Status
+          <select id="userStatus" class="mt-1.5 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20">
+            <option selected>Aktif</option>
+            <option>Nonaktif</option>
+          </select>
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          Provinsi
+          <select id="userProvinsi" class="mt-1.5 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20"></select>
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          Kota
+          <select id="userKota" class="mt-1.5 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20"></select>
+        </label>
+      </div>
+      <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <button type="button" data-close-user class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">Batal</button>
+        <button type="button" id="userDeleteBtn" class="hidden-section rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700">Hapus pengguna</button>
+        <button type="submit" id="userSaveBtn" class="rounded-xl bg-brand-blue px-4 py-2.5 text-sm font-semibold text-white">Simpan</button>
+      </div>
+    </form>
+  </div>
+
+  

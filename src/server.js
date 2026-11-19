@@ -1,5 +1,15 @@
-const app = require("./app");
+const fs = require("fs");
+const path = require("path");
 
+const envFile = path.join(__dirname, "..", ".env");
+if (fs.existsSync(envFile)) {
+  fs.readFileSync(envFile, "utf8").split(/\r?\n/).forEach((line) => {
+    const match = line.match(/^([^#=\s]+)\s*=\s*(.*)$/);
+    if (match && process.env[match[1]] === undefined) process.env[match[1]] = match[2].trim();
+  });
+}
+
+const app = require("./app");
 const port = Number(process.env.PORT) || 3005;
 
 app.listen(port, () => {

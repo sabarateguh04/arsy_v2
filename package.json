@@ -5,12 +5,18 @@
   "description": "ARSY — Algoritma Road Safety",
   "main": "src/server.js",
   "scripts": {
+    "build": "vite build",
     "start": "node src/server.js"
   },
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "autoprefixer": "^10.4.20",
+    "chart.js": "^4.4.6",
+    "express": "^4.21.2",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.3"
   }
 }

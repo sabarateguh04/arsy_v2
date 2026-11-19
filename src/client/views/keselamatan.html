@@ -1,0 +1,243 @@
+<section id="viewKeselamatan" data-view class="absolute inset-0 hidden-section overflow-y-auto bg-white">
+          <div class="sticky top-0 z-40 bg-[#071433] text-white">
+            <div class="relative flex h-14 items-center justify-center px-4">
+              <h2 class="text-center text-lg font-extrabold tracking-[0.14em] sm:text-2xl">KINERJA KESELAMATAN</h2>
+              <div class="absolute right-3 top-1/2 flex -translate-y-1/2 gap-2">
+                <button type="button" id="safePdf" class="grid h-9 w-9 place-items-center rounded-md text-white/90 hover:bg-white/10" aria-label="Unduh PDF">
+                  <i class="fa-solid fa-file-pdf text-lg"></i>
+                </button>
+                <button type="button" id="safeJpg" class="grid h-9 w-9 place-items-center rounded-md text-white/90 hover:bg-white/10" aria-label="Unduh JPG">
+                  <i class="fa-solid fa-file-image text-lg"></i>
+                </button>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-2 bg-[#0a2f86] px-3 py-2.5">
+              <button type="button" data-safe-tab="reduction" class="shrink-0 rounded-full bg-[#1d4ed8] px-4 py-2 text-[11px] font-bold tracking-wide text-white sm:text-xs">FATALITY REDUCTION</button>
+              <button type="button" data-safe-tab="cfr" class="shrink-0 rounded-full bg-[#f472b6] px-4 py-2 text-[11px] font-bold tracking-wide text-white sm:text-xs">CASE FATALITY RATE</button>
+              <button type="button" data-safe-tab="populasi" class="shrink-0 rounded-full bg-[#1d4ed8] px-4 py-2 text-[11px] font-bold tracking-wide text-white sm:text-xs">INDEKS FATALITAS BERBASIS POPULASI</button>
+              <button type="button" data-safe-tab="kendaraan" class="shrink-0 rounded-full bg-[#1d4ed8] px-4 py-2 text-[11px] font-bold tracking-wide text-white sm:text-xs">INDEKS FATALITAS BERBASIS KENDARAAN</button>
+            </div>
+            <p class="px-4 py-1.5 text-center text-[12px] font-medium tracking-wide text-white/80">Pembaruan Terakhir : <span class="font-semibold text-white">1 Januari – 17 November 2026</span></p>
+          </div>
+
+          <div id="safeStage" class="relative flex h-[calc(100%-8.75rem)] min-h-[28rem] flex-col bg-[#e7eef2]">
+            <div id="safeToolbar" class="z-20 shrink-0 border-b border-slate-200 bg-white px-3 py-2">
+              <form id="safeFilters">
+                <label>
+                  <span>Tahun</span>
+                  <select id="safeYear" class="safe-select" aria-label="Tahun">
+                    <option>2024</option>
+                    <option>2025</option>
+                    <option selected>2026</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Bulan</span>
+                  <select id="safeMonth" class="safe-select" aria-label="Bulan">
+                    <option value="all" selected>Semua</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Polda</span>
+                  <select id="safePolda" class="safe-select" aria-label="Polda">
+                    <option value="all">Semua</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Polres</span>
+                  <select id="safePolres" class="safe-select" aria-label="Polres" disabled>
+                    <option value="all">Semua</option>
+                  </select>
+                </label>
+              </form>
+              <div id="safeTools">
+                <label id="safeMapMode">
+                  <select id="safeMapModeSelect" class="safe-select" aria-label="Peta">
+                    <option value="warna">Warna</option>
+                    <option value="garis">Garis</option>
+                    <option value="titik">Titik</option>
+                    <option value="angka">Angka</option>
+                    <option value="gmaps">Hybrid</option>
+                  </select>
+                </label>
+                <div class="flex shrink-0 items-center overflow-hidden rounded-lg border border-slate-200 bg-white">
+                  <button type="button" id="safeZoomOut" class="grid h-8 w-8 place-items-center text-slate-700 hover:bg-slate-100" aria-label="Perkecil peta"><i class="fa-solid fa-minus text-xs"></i></button>
+                  <span id="safeZoomLabel" class="w-12 border-x border-slate-200 text-center text-[10px] font-semibold text-slate-500">100%</span>
+                  <button type="button" id="safeZoomIn" class="grid h-8 w-8 place-items-center text-slate-700 hover:bg-slate-100" aria-label="Perbesar peta"><i class="fa-solid fa-plus text-xs"></i></button>
+                  <button type="button" id="safeZoomReset" class="grid h-8 w-8 place-items-center border-l border-slate-200 text-slate-700 hover:bg-slate-100" aria-label="Tampilkan seluruh peta"><i class="fa-solid fa-location-crosshairs text-xs"></i></button>
+                </div>
+                <button type="button" id="safeFull" class="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-[#0b1f4a] px-3 text-[11px] font-semibold text-white hover:bg-[#12306b]" aria-pressed="false">
+                  <i class="fa-solid fa-expand"></i>
+                  <span>Layar penuh</span>
+                </button>
+              </div>
+            </div>
+            <div class="flex min-h-0 flex-1 flex-col lg:flex-row">
+            <aside class="flex max-h-[46%] shrink-0 flex-col gap-2 overflow-y-auto border-b border-slate-200 bg-[#e7eef2] p-3 lg:max-h-none lg:w-72 lg:border-b-0 lg:border-r">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-lg">
+              <p id="safePanelKicker" class="text-sm font-bold text-slate-800">2026 Case Fatality Rate (CFR)</p>
+              <h3 id="safePanelTitle" class="text-sm text-slate-600">Case Fatality Rate</h3>
+              <div class="mt-2 flex items-start justify-between gap-2">
+                <p id="safePanelValue" class="text-4xl font-bold leading-none text-slate-900">12,38%</p>
+                <svg class="h-14 w-16 shrink-0" viewBox="0 0 64 52" aria-hidden="true">
+                  <ellipse cx="34" cy="44" rx="22" ry="4" fill="#dbe4ee"/>
+                  <path d="M8 30c2-8 8-12 16-12h10l8 8h8c4 0 6 3 6 6v6H8v-8z" fill="#2563eb"/>
+                  <circle cx="20" cy="38" r="5" fill="#0f172a"/>
+                  <circle cx="46" cy="38" r="5" fill="#0f172a"/>
+                  <path d="M40 16l14 6-6 8H36l4-14z" fill="#ef4444"/>
+                  <circle cx="50" cy="28" r="4" fill="#f8fafc" stroke="#ef4444"/>
+                </svg>
+              </div>
+              <p id="safePanelNote" class="mt-2 text-[11px] leading-relaxed text-slate-600">Dari setiap 100 kecelakaan, sekitar 12–13 diantaranya mengakibatkan korban meninggal dunia.</p>
+              <div id="safePanelFacts" class="mt-3 space-y-0.5 text-[11px] leading-relaxed text-[#1d4ed8]">
+                <p>Luas Wilayah : <strong>1.890.179 km²</strong> (Sumber Data : BPS)</p>
+                <p>Jumlah Penduduk : <strong>243.951.447 jiwa</strong></p>
+                <p>Jumlah Kendaraan : <strong>145.001.668 unit</strong></p>
+                <p>Jumlah Pengemudi : <strong>1.827.932 jiwa</strong></p>
+              </div>
+              <div class="mt-3 border-t border-slate-200 pt-2 text-[12px] leading-snug text-[#1d4ed8]">
+                <p>Korban Meninggal Dunia :</p>
+                <p id="safeDeathLine" class="font-bold">18.036 jiwa</p>
+                <p class="mt-1">Jumlah Kecelakaan</p>
+                <p id="safeCrashLine" class="font-bold">145.673 kasus</p>
+              </div>
+            </div>
+            </aside>
+            <div class="flex min-h-0 min-w-0 flex-1 flex-col">
+            <div id="safeMapWrap" class="relative min-h-[16rem] min-w-0 flex-1">
+              <svg id="safeMap" class="absolute inset-0 h-full w-full touch-none" role="img" aria-label="Peta fatalitas provinsi Indonesia"></svg>
+              <div id="safeGoogle" class="absolute inset-0 hidden"></div>
+              <div id="safeMapTip" class="pointer-events-none absolute z-20 hidden max-w-[14rem] rounded-lg bg-[#0b1f4a] px-2.5 py-1.5 text-[11px] leading-snug text-white shadow-lg"></div>
+            </div>
+            <div class="shrink-0 border-t border-slate-200 bg-white px-4 py-2">
+              <div class="flex items-end justify-between text-[11px] font-bold">
+                <span class="text-emerald-700">Fatalitas Menurun</span>
+                <span class="text-red-600">Fatalitas Meningkat</span>
+              </div>
+              <div class="relative mt-1 h-3 rounded-sm bg-gradient-to-r from-emerald-600 via-lime-400 via-40% to-red-600">
+                <span class="absolute -top-1 left-[8%] text-emerald-700">▸</span>
+                <span class="absolute -top-1 right-[6%] text-red-600">◂</span>
+              </div>
+              <div class="mt-0.5 flex justify-between text-[11px] font-semibold text-slate-800">
+                <span>0.00</span>
+                <span>1.00</span>
+              </div>
+            </div>
+            </div>
+            </div>
+          </div>
+
+          <section class="border-t border-slate-200 bg-[#f4f7fb] px-3 py-4 sm:px-4">
+            <div class="flex flex-col gap-4 rounded-2xl border border-[#d7e3f4] bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-center lg:gap-0">
+              <div class="flex shrink-0 items-center gap-4 lg:pr-6">
+                <svg viewBox="0 0 118 46" class="h-14 w-auto sm:h-16" aria-hidden="true">
+                  <polygon points="0,3 20,23 0,43 7,43 27,23 7,3" fill="#e11d2e"/>
+                  <polygon points="16,3 36,23 16,43 23,43 43,23 23,3" fill="#f97316"/>
+                  <polygon points="32,3 52,23 32,43 39,43 59,23 39,3" fill="#f5c518"/>
+                  <polygon points="48,3 68,23 48,43 55,43 75,23 55,3" fill="#3cb44a"/>
+                  <polygon points="64,3 84,23 64,43 71,43 91,23 71,3" fill="#00a3e0"/>
+                  <polygon points="80,3 100,23 80,43 87,43 107,23 87,3" fill="#6d28d9"/>
+                </svg>
+                <div class="leading-none">
+                  <p class="text-[10px] font-semibold tracking-[0.16em] text-slate-500 sm:text-[11px]">DECADE OF ACTION FOR</p>
+                  <p class="mt-1 text-xl font-extrabold tracking-[0.04em] text-[#0b1f4a] sm:text-2xl">ROAD SAFETY</p>
+                  <p class="mt-1.5 text-sm font-semibold text-[#f97316]">2021 – 2030</p>
+                </div>
+              </div>
+              <div class="min-w-0 flex-1 border-[#d7e3f4] lg:border-l lg:pl-6">
+                <h3 class="text-base font-bold text-slate-900 sm:text-lg">Apa itu Kinerja Keselamatan?</h3>
+                <p class="mt-1.5 text-[13px] leading-relaxed text-slate-600">Kinerja keselamatan merupakan evaluasi tentang sejauh mana sistem lalu lintas, infrastruktur jalan, dan perilaku pengemudi memenuhi standar dan tujuan terkait keselamatan dalam penggunaan jalan raya.</p>
+                <p class="mt-1.5 text-[13px] leading-relaxed text-slate-600">Tujuannya adalah untuk memastikan bahwa lalu lintas berjalan dengan tingkat risiko kecelakaan rendah sehingga mengurangi kemungkinan terjadinya kecelakaan dan cedera.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-[#071433] px-5 py-8 text-white sm:px-8">
+            <div class="mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-[18rem_1fr] lg:gap-10">
+              <div class="lg:border-r lg:border-white/15 lg:pr-8">
+                <h3 class="text-[1.7rem] font-semibold leading-tight">Apa Definisi<br><span id="safeDefTitle">Case Fatality Rate?</span></h3>
+                <p id="safeDefLead" class="mt-5 text-sm leading-relaxed text-white/90">Case Fatality Rate (CFR) merupakan pengukuran tingkat fatalitas kecelakaan dengan menggunakan jumlah korban meninggal dunia dibandingkan dengan jumlah kejadian kecelakaan.</p>
+                <p id="safeDefNote" class="mt-4 text-sm leading-relaxed text-white/90">Manfaat dari pengukuran ini sebagai data untuk menentukan program - program preemtif, preventif, dan represif lalu lintas dalam menurunkan fatalitas kecelakaan.</p>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-start gap-4">
+                  <h3 id="safeChartTitle" class="flex-1 text-center text-[13px] font-bold leading-snug tracking-wide sm:text-base">CAPAIAN CASE FATALITY RATE Terhadap Target RUNK LLAJ</h3>
+                  <div class="shrink-0 space-y-1.5 pt-0.5 text-xs font-semibold">
+                    <p class="flex items-center gap-2"><span class="h-2.5 w-2.5 bg-[#ef4444]"></span> MD</p>
+                    <p class="flex items-center gap-2"><span class="h-2.5 w-2.5 bg-[#22c55e]"></span> Laka</p>
+                  </div>
+                </div>
+                <div id="safeTrend" class="mt-2"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-[#e7eef2] px-4 py-6 sm:px-6">
+            <div class="grid w-full items-start gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.85fr)]">
+              <article class="rounded-xl bg-[#0c2348] p-4 text-white shadow-lg lg:col-start-1 lg:row-start-1 lg:self-stretch">
+                <h3 class="text-sm font-bold tracking-wide">TREND PER TAHUN <span class="safe-metric-name font-semibold text-sky-200">Case Fatality Rate</span></h3>
+                <div id="safeYearChart" class="mt-2"></div>
+              </article>
+              <article class="rounded-xl bg-[#0c2348] p-4 text-white shadow-lg lg:col-start-1 lg:row-start-2">
+                <h3 class="text-sm font-bold tracking-wide">TREND PER KUARTAL <span class="safe-metric-name font-semibold text-sky-200">Case Fatality Rate</span></h3>
+                <div id="safeQuarterChart" class="mt-2"></div>
+              </article>
+              <article class="rounded-xl bg-[#0c2348] p-4 text-white shadow-lg lg:col-start-1 lg:row-start-3">
+                <h3 class="text-sm font-bold tracking-wide">TREND PER BULAN <span class="safe-metric-name font-semibold text-sky-200">Case Fatality Rate</span></h3>
+                <div id="safeMonthChart" class="mt-2"></div>
+              </article>
+              <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-lg lg:col-start-2 lg:row-start-1 lg:self-stretch">
+                <h3 class="text-lg font-bold text-slate-900">Rekomendasi</h3>
+                <p class="text-sm font-semibold text-slate-700">Pencegahan</p>
+                <p class="mt-3 text-sm font-bold text-slate-900">CFR: <span id="safeAdviceValue" class="text-base text-[#b91c1c]">12,38%</span></p>
+                <ul class="mt-3 list-disc space-y-1.5 pl-4 text-[13px] leading-snug text-slate-700">
+                  <li>Evaluasi rutin kebijakan keselamatan dan titik rawan.</li>
+                  <li>Kampanye kepatuhan tertib lalu lintas di ruang publik dan media.</li>
+                  <li>Gelar operasi kelengkapan dan pelanggaran ringan secara konsisten.</li>
+                  <li>Pemeliharaan jalan, marka, dan lampu penerangan secara berkala.</li>
+                  <li>Pastikan sistem respons darurat aktif dan cepat (≤10 menit).</li>
+                  <li>Sinergi razia terpadu dengan Dishub dan Satpol PP.</li>
+                </ul>
+              </article>
+              <article class="flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg lg:col-start-2 lg:row-span-2 lg:row-start-2 lg:h-0 lg:min-h-full lg:self-stretch">
+                <div class="px-4 pb-2 pt-4">
+                  <h3 id="safeTableTitle" class="text-sm font-bold text-slate-900">Case Fatality Rate</h3>
+                  <p id="safeTableScope" class="text-[11px] leading-snug text-slate-500">per Polda vs Proyeksi Tanpa Intervensi RUNK Nasional</p>
+                </div>
+                <div id="safePoldaScroll" class="min-h-0 flex-1 overflow-auto">
+                  <table class="w-full text-left text-[11px]">
+                    <thead class="sticky top-0 bg-white text-[11px] text-[#1d4ed8]">
+                      <tr class="border-y border-slate-200">
+                        <th class="px-3 py-2 font-semibold">Polda</th>
+                        <th class="px-2 py-2 text-right font-semibold">MD</th>
+                        <th class="px-2 py-2 text-right font-semibold">Laka</th>
+                        <th class="px-2 py-2 text-right font-semibold">Rank</th>
+                        <th class="px-3 py-2 text-right font-semibold">CFR</th>
+                      </tr>
+                    </thead>
+                    <tbody id="safePoldaBody"></tbody>
+                  </table>
+                </div>
+              </article>
+            </div>
+            <footer class="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-t border-slate-300 pt-4 text-xs text-slate-600">
+              <span><i class="fa-regular fa-envelope mr-1.5"></i>Email : support@algoritma.or.id</span>
+              <span><i class="fa-solid fa-phone mr-1.5"></i>Kontak : +62 812 - 1689 - 0906</span>
+              <span><i class="fa-regular fa-clock mr-1.5"></i>Senin - Jumat : 8:00 - 16:00</span>
+            </footer>
+          </section>
+        </section>
+
+        

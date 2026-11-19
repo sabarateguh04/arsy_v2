@@ -1,0 +1,58 @@
+<section id="viewKetertiban" data-view class="absolute inset-0 hidden-section overflow-auto p-4 md:p-6">
+          <div class="mb-6">
+            <h2 class="text-2xl font-semibold text-slate-900">Ketertiban</h2>
+            <p class="mt-1 text-sm text-slate-500">Komposisi pelanggaran yang tercatat kamera dan petugas bulan ini.</p>
+          </div>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <article class="rounded-xl border border-slate-200 bg-white p-5">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-sm text-slate-500">Pelanggaran</p>
+                  <p class="mt-1 text-3xl font-semibold text-slate-900">1.090</p>
+                </div>
+                <span class="grid h-11 w-11 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fa-solid fa-clipboard-check"></i></span>
+              </div>
+              <p class="mt-4 text-xs font-medium text-slate-500">Total bulan berjalan</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-white p-5">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-sm text-slate-500">Tilang terbit</p>
+                  <p class="mt-1 text-3xl font-semibold text-slate-900">640</p>
+                </div>
+                <span class="grid h-11 w-11 place-items-center rounded-xl bg-emerald-50 text-emerald-700"><i class="fa-solid fa-file-circle-check"></i></span>
+              </div>
+              <p class="mt-4 text-xs font-medium text-emerald-600">59% berlanjut ke tilang</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-white p-5">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-sm text-slate-500">Indeks kepatuhan</p>
+                  <p class="mt-1 text-3xl font-semibold text-slate-900">86%</p>
+                </div>
+                <span class="grid h-11 w-11 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fa-solid fa-scale-balanced"></i></span>
+              </div>
+              <p class="mt-4 text-xs font-medium text-emerald-600"><i class="fa-solid fa-arrow-trend-up"></i> 2 poin dari bulan lalu</p>
+            </article>
+          </div>
+          <div class="mt-5 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <div class="mb-4">
+              <h3 class="font-semibold text-slate-900">Jenis pelanggaran</h3>
+              <p class="text-xs text-slate-500">Porsi tiap jenis pelanggaran</p>
+            </div>
+            <div class="grid items-center gap-6 lg:grid-cols-2">
+              <div class="relative mx-auto h-72 w-full max-w-md">
+                <canvas id="chartKetertiban"></canvas>
+              </div>
+              <ul class="space-y-3 text-sm">
+                <li class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"><span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-emerald-800"></span> Tanpa helm</span><span class="font-semibold">420</span></li>
+                <li class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"><span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-emerald-600"></span> Kecepatan</span><span class="font-semibold">260</span></li>
+                <li class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"><span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Lawan arus</span><span class="font-semibold">180</span></li>
+                <li class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"><span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-emerald-300"></span> Parkir liar</span><span class="font-semibold">140</span></li>
+                <li class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"><span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-lime-300"></span> Lampu mati</span><span class="font-semibold">90</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        
