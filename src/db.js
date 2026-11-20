@@ -1,37 +1,43 @@
 const fs = require("fs");
 const path = require("path");
 const mysql = require("mysql2/promise");
+const { loadEnv, ensureEnv, dbSettings } = require("./env");
 
 const migrationsDir = path.join(__dirname, "..", "sql", "migrations");
 
 function settings() {
-  return {
-    host: process.env.MYSQL_HOST || "127.0.0.1",
-    port: Number(process.env.MYSQL_PORT) || 3306,
-    user: process.env.MYSQL_USER || "root",
-    password: process.env.MYSQL_PASSWORD || "",
-    database: process.env.MYSQL_DATABASE || "db_arsy",
-    charset: "utf8mb4"
-  };
+  return dbSettings();
 }
 
 let pool = null;
 
 async function migrate() {
   const conf = settings();
-  const root = await mysql.createConnection({
-    host: conf.host,
-    port: conf.port,
-    user: conf.user,
-    password: conf.password,
-    multipleStatements: true
-  });
+  const dbName = String(conf.database).replace(/`/g, "");
+
   try {
-    await root.query(
-      "CREATE DATABASE IF NOT EXISTS `" + conf.database.replace(/`/g, "") + "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-    );
-  } finally {
-    await root.end();
+    const root = await mysql.createConnection({
+      host: conf.host,
+      port: conf.port,
+      user: conf.user,
+      password: conf.password,
+      multipleStatements: true
+    });
+    try {
+      await root.query(
+        "CREATE DATABASE IF NOT EXISTS `" + dbName + "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+      );
+    } catch (error) {
+      if (error.code !== "ER_DBACCESS_DENIED_ERROR" && error.code !== "ER_SPECIFIC_ACCESS_DENIED_ERROR") {
+        throw error;
+      }
+    } finally {
+      await root.end();
+    }
+  } catch (error) {
+    if (error.code === "ECONNREFUSED" || error.code === "ENOTFOUND" || error.code === "ETIMEDOUT") {
+      throw error;
+    }
   }
 
   const conn = await mysql.createConnection({
@@ -70,7 +76,7 @@ async function migrate() {
     password: conf.password,
     database: conf.database,
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: conf.connectionLimit || 20,
     charset: "utf8mb4"
   });
 }
@@ -86,16 +92,13 @@ async function query(sql, params) {
 }
 
 if (require.main === module) {
-  const envFile = path.join(__dirname, "..", ".env");
-  if (fs.existsSync(envFile)) {
-    fs.readFileSync(envFile, "utf8").split(/\r?\n/).forEach((line) => {
-      const match = line.match(/^([^#=\s]+)\s*=\s*(.*)$/);
-      if (match && process.env[match[1]] === undefined) process.env[match[1]] = match[2].trim();
-    });
-  }
+  const created = ensureEnv();
+  loadEnv();
+  const conf = settings();
   migrate()
     .then(() => {
-      console.log("Database " + (process.env.MYSQL_DATABASE || "db_arsy") + " siap.");
+      if (created) console.log("File .env dibuat dengan kredensial default db_arsy.");
+      console.log("Database " + conf.database + " siap (" + conf.user + "@" + conf.host + ":" + conf.port + ").");
       return pool && pool.end();
     })
     .catch((error) => {

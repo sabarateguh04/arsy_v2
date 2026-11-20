@@ -1,13 +1,6 @@
-const fs = require("fs");
-const path = require("path");
+const { loadEnv, dbSettings } = require("./env");
 
-const envFile = path.join(__dirname, "..", ".env");
-if (fs.existsSync(envFile)) {
-  fs.readFileSync(envFile, "utf8").split(/\r?\n/).forEach((line) => {
-    const match = line.match(/^([^#=\s]+)\s*=\s*(.*)$/);
-    if (match && process.env[match[1]] === undefined) process.env[match[1]] = match[2].trim();
-  });
-}
+loadEnv();
 
 const { migrate } = require("./db");
 const app = require("./app");
@@ -20,6 +13,8 @@ migrate()
     });
   })
   .catch((error) => {
+    const conf = dbSettings();
     console.error("Database belum siap: " + error.message);
+    console.error("Cek user " + conf.user + "@" + conf.host + " / database " + conf.database + ".");
     process.exit(1);
   });
