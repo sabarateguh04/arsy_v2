@@ -1,7 +1,7 @@
     function roleLevel(user) {
-      if (!user || user.role === "Admin" || user.role === "Eksekutif 1") return "nasional";
-      if (user.role === "Eksekutif 2") return "provinsi";
-      return "kota";
+      if (!user) return "nasional";
+      if (user.cakupan) return user.cakupan;
+      return roleCakupan(user.role);
     }
 
     function poldaKey(provinsi) {
@@ -17,6 +17,7 @@
     }
 
     function scopeLabel(user) {
+      if (!user) return "Nasional";
       const level = roleLevel(user);
       if (level === "nasional") return "Nasional";
       if (level === "provinsi") return user.jabatan || user.provinsi || "Provinsi";
@@ -28,7 +29,7 @@
       const items = [];
       document.querySelectorAll("#sidebar [data-side], #sidebar [data-leaf]").forEach((button) => {
         const key = button.dataset.side || button.dataset.leaf;
-        if (key === "viewUsers" || key === "viewMenuAdmin") return;
+        if (key === "viewUsers" || key === "viewMenuAdmin" || key === "mrole" || key === "mjabatan" || key === "mprovinsi" || key === "mkota") return;
         const host = button.closest("ul[id^='sub-']");
         const groupId = host ? host.id.replace("sub-", "") : "menu";
         items.push({
@@ -42,20 +43,35 @@
 
     function buildDefaultGrants() {
       const grants = {};
-      ACCESS_ROLES.forEach((role) => { grants[role] = {}; });
+      accessRoles().forEach((role) => { grants[role] = {}; });
       menuCatalog().forEach((item) => {
-        grants["Eksekutif 1"][item.key] = item.group !== "Data Master";
-        grants["Eksekutif 2"][item.key] = ["viewMap", "viewKeselamatan", "viewKetertiban", "viewKelancaran"].includes(item.key) || item.group === "Data Sekunder";
-        grants["Eksekutif 3"][item.key] = ["viewMap", "viewKeselamatan", "viewKeamanan"].includes(item.key);
-        grants.Operator[item.key] = item.key === "viewMap" || item.key === "viewKeselamatan";
+        accessRoles().forEach((role) => {
+          if (role === "Eksekutif 1") grants[role][item.key] = item.group !== "Data Master";
+          else if (role === "Eksekutif 2") grants[role][item.key] = ["viewMap", "viewKeselamatan", "viewKetertiban", "viewKelancaran"].includes(item.key) || item.group === "Data Sekunder";
+          else if (role === "Eksekutif 3") grants[role][item.key] = ["viewMap", "viewKeselamatan", "viewKeamanan"].includes(item.key);
+          else if (role === "Operator") grants[role][item.key] = item.key === "viewMap" || item.key === "viewKeselamatan";
+          else grants[role][item.key] = false;
+        });
       });
       return grants;
+    }
+
+    function applySavedGrants(saved) {
+      const defaults = buildDefaultGrants();
+      Object.keys(defaults).forEach((role) => {
+        defaults[role] = Object.assign(defaults[role], (saved && saved[role]) || {});
+      });
+      Object.keys(saved || {}).forEach((role) => {
+        if (role === "Admin") return;
+        defaults[role] = Object.assign(defaults[role] || {}, saved[role] || {});
+      });
+      menuGrants = defaults;
     }
 
     function canOpen(key) {
       if (!session) return false;
       if (key === "profile") return true;
-      if (key === "viewUsers" || key === "viewMenuAdmin" || key === "users") return session.role === "Admin";
+      if (key === "viewUsers" || key === "viewMenuAdmin" || key === "users" || key === "mrole" || key === "mjabatan" || key === "mprovinsi" || key === "mkota") return session.role === "Admin";
       if (key === "viewSurvey") key = "mobile";
       if (session.role === "Admin") return true;
       return !!(menuGrants && menuGrants[session.role] && menuGrants[session.role][key]);

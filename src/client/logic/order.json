@@ -7,5 +7,6 @@
   "06-users.js",
   "07-chrome.js",
   "08-safety.js",
-  "09-session.js"
+  "09-session.js",
+  "10-master.js"
 ]

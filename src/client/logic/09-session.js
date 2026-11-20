@@ -31,14 +31,33 @@
     });
     document.getElementById("accountLogout").addEventListener("click", () => {
       session = null;
+      users = [];
+      fetch("/api/logout", { method: "POST" }).catch(() => undefined);
       setAccountMenu(false);
       showPage("publicPortal");
     });
 
     async function attemptLogin(email, password) {
       await stateReady;
-      const found = users.find((user) => user.email.toLowerCase() === String(email || "").trim().toLowerCase() && user.password === password && user.status === "Aktif");
       const error = document.getElementById("loginError");
+      let found = null;
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        if (response.ok) found = await response.json();
+        else if (response.status >= 500) {
+          error.textContent = "Layanan akun belum siap. Coba lagi.";
+          error.classList.remove("hidden");
+          return;
+        }
+      } catch (err) {
+        error.textContent = "Layanan akun belum siap. Coba lagi.";
+        error.classList.remove("hidden");
+        return;
+      }
       if (!found) {
         error.textContent = "Email atau kata sandi tidak cocok, atau akun sedang nonaktif.";
         error.classList.remove("hidden");
@@ -47,24 +66,29 @@
       error.classList.add("hidden");
       if (!menuGrants) menuGrants = buildDefaultGrants();
       session = found;
+      await loadCatalog();
+      if (session.role === "Admin") await loadUsers();
       activeView = canOpen("viewMap") ? "viewMap" : "viewKeselamatan";
       showPage("operatorDashboard");
     }
 
-    function renderMenuAdmin() {
+    async function loadCatalog() {
+      try {
+        const response = await fetch("/api/master/catalog");
+        if (!response.ok) return false;
+        const data = await response.json();
+        masterCatalog = Object.assign({ roles: [], jabatan: [], provinsi: [], kota: [], menus: [], areas: {}, grants: null }, data);
+        applySavedGrants(data.grants || menuGrants);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    async function renderMenuAdmin() {
       if (!menuGrants) menuGrants = buildDefaultGrants();
-      const body = document.getElementById("menuGrantBody");
-      if (!body) return;
-      let group = "";
-      body.innerHTML = menuCatalog().map((item) => {
-        const head = item.group === group ? "" : `<tr class="bg-[#f4f7fb]"><td colspan="5" class="px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">${esc(item.group)}</td></tr>`;
-        group = item.group;
-        const cells = ACCESS_ROLES.map((role) => {
-          const on = !!menuGrants[role][item.key];
-          return `<td class="px-3 py-2 text-center"><input type="checkbox" data-grant-role="${esc(role)}" data-grant-key="${esc(item.key)}" ${on ? "checked" : ""} class="h-4 w-4 accent-[#1e3a8a]"></td>`;
-        }).join("");
-        return head + `<tr class="border-t border-slate-100"><td class="px-4 py-2.5 text-slate-800">${esc(item.label)}</td>${cells}</tr>`;
-      }).join("");
+      await loadCatalog();
+      paintAccessMatrix("menuGrantHead", "menuGrantBody");
     }
 
     menuGrants = buildDefaultGrants();
@@ -72,13 +96,7 @@
       if (!response.ok) return;
       const data = await response.json();
       if (Array.isArray(data.reports)) surveyReports = data.reports;
-      if (data.grants && typeof data.grants === "object") {
-        const defaults = buildDefaultGrants();
-        ACCESS_ROLES.forEach((role) => {
-          defaults[role] = Object.assign(defaults[role], data.grants[role] || {});
-        });
-        menuGrants = defaults;
-      }
+      if (data.grants && typeof data.grants === "object") applySavedGrants(data.grants);
     }).catch(() => undefined);
     document.getElementById("loginForm").addEventListener("submit", (event) => {
       event.preventDefault();
@@ -93,7 +111,8 @@
     });
     document.getElementById("menuGrantBody").addEventListener("change", (event) => {
       const box = event.target.closest("[data-grant-key]");
-      if (!box || !menuGrants[box.dataset.grantRole]) return;
+      if (!box) return;
+      if (!menuGrants[box.dataset.grantRole]) menuGrants[box.dataset.grantRole] = {};
       menuGrants[box.dataset.grantRole][box.dataset.grantKey] = box.checked;
       applyMenuAccess();
       persistGrants();
@@ -108,6 +127,7 @@
     });
     document.getElementById("userRole").addEventListener("change", () => {
       syncUserScopeFields({
+        jabatan: document.getElementById("userJabatan").value,
         provinsi: document.getElementById("userProvinsi").value,
         kota: document.getElementById("userKota").value
       }, userMode === "view");
@@ -131,10 +151,10 @@
     });
 
     document.getElementById("userProvinsi").addEventListener("change", () => {
-      const role = document.getElementById("userRole").value;
-      if (role === "Admin" || role === "Eksekutif 1") return;
+      const cakupan = roleCakupan(document.getElementById("userRole").value);
+      if (cakupan === "nasional") return;
       fillUserAreas(document.getElementById("userProvinsi").value, "");
-      if (role === "Eksekutif 2") {
+      if (cakupan === "provinsi") {
         const kotaSelect = document.getElementById("userKota");
         kotaSelect.innerHTML = "<option>—</option>";
         kotaSelect.disabled = true;
@@ -159,30 +179,34 @@
       if (!button) return;
       openUserModal(button.dataset.userAction, Number(button.dataset.userIndex));
     });
-    document.getElementById("userForm").addEventListener("submit", (event) => {
+    document.getElementById("userForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       if (userMode !== "create" && userMode !== "edit") return;
       const draft = readUserForm();
-      const duplicate = users.some((user, index) => user.email.toLowerCase() === draft.email.toLowerCase() && index !== userIndex);
-      if (duplicate) {
-        document.getElementById("userEmail").setCustomValidity("Email ini sudah dipakai.");
-        document.getElementById("userEmail").reportValidity();
+      showUserError("");
+      const current = userIndex >= 0 ? users[userIndex] : null;
+      const response = userMode === "create"
+        ? await fetch("/api/users", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(draft) })
+        : await fetch("/api/users/" + encodeURIComponent(current.id), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(draft) });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        showUserError(data.error || "Pengguna belum tersimpan.");
         return;
       }
-      document.getElementById("userEmail").setCustomValidity("");
-      if (userMode === "create") {
-        users.unshift(Object.assign({ id: nextUserId() }, draft));
-      } else {
-        users[userIndex] = Object.assign({}, users[userIndex], draft);
+      closeUserModal();
+      await loadUsers();
+    });
+    document.getElementById("userDeleteBtn").addEventListener("click", async () => {
+      if (userIndex < 0) return;
+      const current = users[userIndex];
+      const response = await fetch("/api/users/" + encodeURIComponent(current.id), { method: "DELETE" });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        showUserError(data.error || "Pengguna belum terhapus.");
+        return;
       }
       closeUserModal();
-      renderUsers();
-    });
-    document.getElementById("userDeleteBtn").addEventListener("click", () => {
-      if (userIndex < 0) return;
-      users.splice(userIndex, 1);
-      closeUserModal();
-      renderUsers();
+      await loadUsers();
     });
     document.querySelectorAll("[data-close-user]").forEach((el) => {
       el.addEventListener("click", closeUserModal);
@@ -242,7 +266,7 @@
         if (onDesk && !canOpen("viewKeselamatan")) return "Kinerja Keselamatan tidak dibuka untuk peran yang sedang masuk.";
         return onDesk ? "Kinerja Keselamatan sudah dibuka. Angka dan tabel mengikuti cakupan akun ini." : "Kinerja Keselamatan ada setelah masuk ke command center, di menu Dashboard.";
       }
-      if (q.includes("master") || q.includes("import")) return "Data Master punya grup Import (Import Data, Edit Data, Log Import) dan Input (Mobile apps).";
+      if (q.includes("master") || q.includes("import")) return "Data Master punya grup Import (Import Data, Edit Data, Log Import) dan Input (Input Gangguan). Role, Jabatan, Provinsi, Kota, dan Manajemen Menu ada di Administrasi.";
       if (q.includes("sekunder")) return "Data Sekunder menampilkan Data Populasi, Laporan Harian, Data IRSMS, Data Langgar, dan Data Kendaraan.";
       return "Saya bisa bantu ke Peta Utama, Kinerja Keselamatan, Data Sekunder, atau Data Master. Sebut bagian yang ingin dilihat.";
     }
@@ -278,6 +302,7 @@
         return;
       }
       closeUserModal();
+      closeMasterModal();
       closePoint();
       document.getElementById("newsModal").classList.add("hidden-section");
       document.getElementById("filterMenu").classList.add("hidden-section");

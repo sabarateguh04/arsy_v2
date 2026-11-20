@@ -2,6 +2,8 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const store = require("../store");
+const users = require("../users");
+const master = require("../master");
 
 const router = express.Router();
 const TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/jpg": "jpg", "image/webp": "webp", "image/gif": "gif" };
@@ -28,9 +30,165 @@ function removePhoto(url) {
   if (fs.existsSync(file)) fs.unlinkSync(file);
 }
 
-router.get("/state", (req, res) => {
+function requireAdmin(req, res) {
+  const session = users.readSession(req);
+  if (!session) {
+    res.status(401).json({ error: "Masuk dulu sebagai admin." });
+    return null;
+  }
+  if (session.role !== "Admin") {
+    res.status(403).json({ error: "Hanya admin yang bisa mengelola pengguna." });
+    return null;
+  }
+  return session;
+}
+
+router.post("/login", async (req, res) => {
+  const email = text(req.body && req.body.email, 190);
+  const password = String((req.body && req.body.password) || "");
+  try {
+    const user = await users.login(email, password);
+    if (!user) {
+      res.status(401).json({ error: "Email atau kata sandi tidak cocok, atau akun sedang nonaktif." });
+      return;
+    }
+    users.setSessionCookie(res, users.createSession(user));
+    res.json(user);
+  } catch (error) {
+    res.status(503).json({ error: "Layanan akun belum siap. Coba lagi." });
+  }
+});
+
+router.post("/logout", (req, res) => {
+  users.destroySession(req);
+  users.clearSessionCookie(res);
+  res.json({ ok: true });
+});
+
+router.get("/users", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  try {
+    res.json(await users.listUsers());
+  } catch (error) {
+    res.status(500).json({ error: "Daftar pengguna belum bisa dibuka." });
+  }
+});
+
+router.post("/users", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  try {
+    const result = await users.createUser(req.body || {});
+    if (result.error) {
+      res.status(result.status || 400).json({ error: result.error });
+      return;
+    }
+    res.status(201).json(result.user);
+  } catch (error) {
+    res.status(500).json({ error: "Pengguna belum tersimpan." });
+  }
+});
+
+router.put("/users/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  try {
+    const result = await users.updateUser(req.params.id, req.body || {});
+    if (result.error) {
+      res.status(result.status || 400).json({ error: result.error });
+      return;
+    }
+    res.json(result.user);
+  } catch (error) {
+    res.status(500).json({ error: "Pengguna belum tersimpan." });
+  }
+});
+
+router.delete("/users/:id", async (req, res) => {
+  const session = requireAdmin(req, res);
+  if (!session) return;
+  try {
+    const result = await users.deleteUser(req.params.id, session.id);
+    if (result.error) {
+      res.status(result.status || 400).json({ error: result.error });
+      return;
+    }
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(500).json({ error: "Pengguna belum terhapus." });
+  }
+});
+
+router.get("/master/catalog", async (req, res) => {
+  if (!users.readSession(req)) {
+    res.status(401).json({ error: "Masuk dulu." });
+    return;
+  }
+  try {
+    res.json(await master.catalog());
+  } catch (error) {
+    res.status(500).json({ error: "Data master belum bisa dibuka." });
+  }
+});
+
+["roles", "jabatan", "provinsi", "kota", "menus"].forEach((type) => {
+  router.get("/master/" + type, async (req, res) => {
+    if (!requireAdmin(req, res)) return;
+    try {
+      res.json(await master.list(type));
+    } catch (error) {
+      res.status(500).json({ error: "Data belum bisa dibuka." });
+    }
+  });
+  router.post("/master/" + type, async (req, res) => {
+    if (!requireAdmin(req, res)) return;
+    try {
+      const result = await master.create(type, req.body || {});
+      if (result.error) {
+        res.status(result.status || 400).json({ error: result.error });
+        return;
+      }
+      res.status(201).json(result.row);
+    } catch (error) {
+      res.status(500).json({ error: "Data belum tersimpan." });
+    }
+  });
+  router.put("/master/" + type + "/:id", async (req, res) => {
+    if (!requireAdmin(req, res)) return;
+    try {
+      const result = await master.update(type, req.params.id, req.body || {});
+      if (result.error) {
+        res.status(result.status || 400).json({ error: result.error });
+        return;
+      }
+      res.json(result.row);
+    } catch (error) {
+      res.status(500).json({ error: "Data belum tersimpan." });
+    }
+  });
+  router.delete("/master/" + type + "/:id", async (req, res) => {
+    if (!requireAdmin(req, res)) return;
+    try {
+      const result = await master.remove(type, req.params.id);
+      if (result.error) {
+        res.status(result.status || 400).json({ error: result.error });
+        return;
+      }
+      res.json({ ok: true });
+    } catch (error) {
+      res.status(500).json({ error: "Data belum terhapus." });
+    }
+  });
+});
+
+router.get("/state", async (req, res) => {
   const data = store.read();
-  res.json({ reports: data.reports, grants: data.grants });
+  let grants = data.grants;
+  try {
+    const fromDb = await master.getGrants();
+    if (fromDb) grants = fromDb;
+  } catch (error) {
+    grants = data.grants;
+  }
+  res.json({ reports: data.reports, grants });
 });
 
 router.put("/grants", async (req, res) => {
@@ -40,9 +198,7 @@ router.put("/grants", async (req, res) => {
     return;
   }
   try {
-    await store.update((data) => {
-      data.grants = grants;
-    });
+    await master.saveGrants(grants);
   } catch (error) {
     res.status(500).json({ error: "Pengaturan menu belum tersimpan." });
     return;

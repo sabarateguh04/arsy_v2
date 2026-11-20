@@ -1,29 +1,40 @@
-<section id="viewMenuAdmin" data-view class="absolute inset-0 hidden-section overflow-auto bg-slate-100 p-4 md:p-6">
-          <div class="mb-6">
-            <p class="text-sm font-semibold text-brand-orange">Administrasi</p>
-            <h2 class="text-2xl font-semibold text-slate-900">Manajemen Menu</h2>
-            <p class="mt-1 max-w-3xl text-sm text-slate-500">Centang menu yang boleh dibuka tiap peran. Admin selalu bisa membuka semua menu, termasuk halaman ini.</p>
+<section id="viewMenuAdmin" data-view class="absolute inset-0 hidden-section overflow-auto bg-slate-100 p-4 pb-24 md:p-6 md:pb-24">
+          <div class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <p class="text-sm font-semibold text-brand-orange">Administrasi</p>
+              <h2 class="text-2xl font-semibold text-slate-900">Manajemen Menu</h2>
+              <p class="mt-1 max-w-3xl text-sm text-slate-500">Centang menu yang boleh dibuka tiap peran. Admin selalu bisa membuka semua menu, termasuk halaman ini.</p>
+            </div>
+            <button type="button" id="menuGrantSave" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-blue px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg">
+              <i class="fa-solid fa-floppy-disk"></i> Simpan akses
+            </button>
           </div>
-          <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="overflow-x-auto">
-              <table class="min-w-[760px] w-full text-left text-sm">
-                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                  <tr>
-                    <th class="px-4 py-3 font-semibold">Menu</th>
-                    <th class="px-3 py-3 text-center font-semibold">Eksekutif 1</th>
-                    <th class="px-3 py-3 text-center font-semibold">Eksekutif 2</th>
-                    <th class="px-3 py-3 text-center font-semibold">Eksekutif 3</th>
-                    <th class="px-3 py-3 text-center font-semibold">Operator</th>
-                  </tr>
+          <div class="mb-4 flex flex-col gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+              <span class="inline-flex items-center gap-2">
+                <span class="grant-toggle grant-toggle-demo" aria-hidden="true"><span class="is-on"></span></span>
+                Boleh dibuka
+              </span>
+              <span class="inline-flex items-center gap-2">
+                <span class="grant-toggle grant-toggle-demo" aria-hidden="true"><span></span></span>
+                Tidak dibuka
+              </span>
+              <span class="hidden h-4 w-px bg-slate-200 sm:block"></span>
+              <span>Admin tidak perlu dicentang.</span>
+            </div>
+            <p id="menuGrantMeta" class="text-xs font-medium text-slate-600">—</p>
+          </div>
+          <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <div class="grant-scroll overflow-x-auto">
+              <table class="grant-table w-full text-left text-sm">
+                <thead>
+                  <tr id="menuGrantHead"></tr>
                 </thead>
                 <tbody id="menuGrantBody"></tbody>
               </table>
             </div>
             <div class="flex items-center justify-between border-t border-slate-100 px-4 py-3">
               <p id="menuGrantNote" class="text-xs text-slate-500">Perubahan tetap tersimpan setelah halaman dimuat ulang.</p>
-              <button type="button" id="menuGrantSave" class="rounded-xl bg-brand-blue px-4 py-2 text-sm font-semibold text-white">Simpan akses</button>
             </div>
           </div>
         </section>
-
-        

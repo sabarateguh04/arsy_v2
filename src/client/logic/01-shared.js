@@ -57,15 +57,10 @@
       { id: "KA-13", lat: -6.235620, lng: 106.996840, type: "KA", title: "Bekasi", wilayah: "Bekasi", desc: "Perlintasan sebidang di barat Stasiun Bekasi.", photo: "/img/stock/29d1202417fd.jpg", jam: "06.00–09.00 · 16.30–19.30", waktu: "16 Nov 2026 · 07.16", penyebab: "Palang turun di ruas nasional. Antrean menembus simpang Juanda.", ruas: "Nasional", ruasNama: "Jl. Ir. H. Juanda", ka: { kategori: "Sebidang berpalang", nama: "Perlintasan Bekasi", km: "KM 20+150", wilayah: "Bekasi" } }
     ];
 
-    let users = [
-      { id: "USR-2401", name: "Dina Saputra", email: "admin@arsy.id", password: "arsy1234", role: "Admin", provinsi: "", kota: "", polda: "", jabatan: "Admin", status: "Aktif" },
-      { id: "USR-2410", name: "Komjen Pol. Andika Pratama", email: "kapolri@arsy.id", password: "arsy1234", role: "Eksekutif 1", provinsi: "", kota: "", polda: "", jabatan: "Kapolri", status: "Aktif" },
-      { id: "USR-2411", name: "Irjen Pol. Raka Mahendra", email: "kapolda.metro@arsy.id", password: "arsy1234", role: "Eksekutif 2", provinsi: "DKI Jakarta", kota: "", polda: "Jakarta Raya", jabatan: "Kapolda Metro Jaya", status: "Aktif" },
-      { id: "USR-2412", name: "Kombes Pol. Sari Wulandari", email: "kapolres.depok@arsy.id", password: "arsy1234", role: "Eksekutif 3", provinsi: "DKI Jakarta", kota: "Depok", polda: "Jakarta Raya", jabatan: "Kapolres Metro Depok", status: "Aktif" },
-      { id: "USR-2413", name: "Bripka Dimas Putra", email: "operator.depok@arsy.id", password: "arsy1234", role: "Operator", provinsi: "DKI Jakarta", kota: "Depok", polda: "Jakarta Raya", jabatan: "Operator Depok", status: "Aktif" }
-    ];
+    let users = [];
     let session = null;
     let menuGrants = null;
+    let masterCatalog = { roles: [], jabatan: [], provinsi: [], kota: [], menus: [], areas: {}, grants: null };
 
     const USER_AREAS = {
       "Aceh": ["Banda Aceh", "Lhokseumawe", "Langsa", "Sabang", "Subulussalam"],
@@ -108,21 +103,38 @@
       "Papua Pegunungan": ["Wamena"]
     };
 
+    function areaMap() {
+      if (masterCatalog.areas && Object.keys(masterCatalog.areas).length) return masterCatalog.areas;
+      return USER_AREAS;
+    }
+
     function fillUserAreas(provinsi, kota) {
       const provinsiSelect = document.getElementById("userProvinsi");
-      const names = Object.keys(USER_AREAS);
-      if (!provinsiSelect.options.length) {
-        provinsiSelect.innerHTML = names.map((name) => `<option>${esc(name)}</option>`).join("");
-      }
+      const names = Object.keys(areaMap());
+      provinsiSelect.innerHTML = names.map((name) => `<option>${esc(name)}</option>`).join("");
       const nextProvinsi = names.includes(provinsi) ? provinsi : names[0];
       provinsiSelect.value = nextProvinsi;
-      const cities = USER_AREAS[nextProvinsi] || [];
+      const cities = areaMap()[nextProvinsi] || [];
       const kotaSelect = document.getElementById("userKota");
       kotaSelect.innerHTML = cities.map((name) => `<option>${esc(name)}</option>`).join("");
       kotaSelect.value = cities.includes(kota) ? kota : cities[0];
     }
 
     const ACCESS_ROLES = ["Eksekutif 1", "Eksekutif 2", "Eksekutif 3", "Operator"];
+
+    function accessRoles() {
+      const rows = (masterCatalog.roles || []).filter((role) => role.name !== "Admin" && role.status === "Aktif");
+      if (rows.length) return rows.map((role) => role.name);
+      return ACCESS_ROLES.slice();
+    }
+
+    function roleCakupan(roleName) {
+      const row = (masterCatalog.roles || []).find((role) => role.name === roleName);
+      if (row && row.cakupan) return row.cakupan;
+      if (roleName === "Admin" || roleName === "Eksekutif 1") return "nasional";
+      if (roleName === "Eksekutif 2") return "provinsi";
+      return "kota";
+    }
     const METRO_KOTA = ["Jakarta Pusat", "Jakarta Utara", "Jakarta Barat", "Jakarta Selatan", "Jakarta Timur", "Kepulauan Seribu", "Depok", "Tangerang", "Tangerang Selatan", "Bekasi"];
     const POINT_KOTA = {
       "Bundaran HI": "Jakarta Pusat", "Gambir": "Jakarta Pusat", "Sudirman": "Jakarta Pusat", "Tanah Abang": "Jakarta Pusat", "Senayan": "Jakarta Pusat",

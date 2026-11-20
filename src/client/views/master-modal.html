@@ -1,0 +1,22 @@
+  <div id="masterModal" class="hidden-section fixed inset-0 z-[80] flex items-end justify-center p-4 sm:items-center">
+    <div class="absolute inset-0 bg-slate-900/50" data-close-master></div>
+    <form id="masterForm" class="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-brand-orange">Administrasi</p>
+          <h3 id="masterModalTitle" class="mt-1 text-xl font-semibold text-slate-900">Tambah</h3>
+        </div>
+        <button type="button" data-close-master class="grid h-9 w-9 place-items-center rounded-xl text-slate-400 hover:bg-slate-100" aria-label="Tutup">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <p id="masterDeleteHint" class="hidden-section mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">Data ini akan dihapus dari daftar.</p>
+      <div id="masterFields" class="mt-5 grid gap-4"></div>
+      <p id="masterFormError" class="hidden-section mt-3 text-sm text-red-600"></p>
+      <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <button type="button" data-close-master class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">Batal</button>
+        <button type="button" id="masterDeleteBtn" class="hidden-section rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700">Hapus</button>
+        <button type="submit" id="masterSaveBtn" class="rounded-xl bg-brand-blue px-4 py-2.5 text-sm font-semibold text-white">Simpan</button>
+      </div>
+    </form>
+  </div>

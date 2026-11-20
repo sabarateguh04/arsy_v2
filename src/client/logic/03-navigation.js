@@ -161,6 +161,12 @@
         paintMenu(id, "crud");
         return;
       }
+      if (typeof MASTER_PAGES !== "undefined" && MASTER_PAGES[id]) {
+        switchOperatorView("viewMaster");
+        paintMaster(id);
+        paintMenu(id, "crud");
+        return;
+      }
       const item = LEAVES[id];
       const button = document.querySelector(`[data-leaf="${id}"]`);
       const title = item ? item.title : (button ? button.textContent.trim() : "Halaman ini");
@@ -181,8 +187,8 @@
     }
 
     function switchOperatorView(viewId) {
-      if (session && viewId !== "viewProfile" && viewId !== "viewConstruction" && !canOpen(viewId)) return;
-      const live = viewId === "viewMap" || viewId === "viewKeselamatan" || viewId === "viewProfile" || viewId === "viewUsers" || viewId === "viewMenuAdmin" || viewId === "viewSurvey";
+      if (session && viewId !== "viewProfile" && viewId !== "viewConstruction" && viewId !== "viewMaster" && !canOpen(viewId)) return;
+      const live = viewId === "viewMap" || viewId === "viewKeselamatan" || viewId === "viewProfile" || viewId === "viewUsers" || viewId === "viewMenuAdmin" || viewId === "viewSurvey" || viewId === "viewMaster";
       const shown = live ? viewId : "viewConstruction";
       activeView = viewId;
       document.querySelectorAll("[data-view]").forEach((section) => {

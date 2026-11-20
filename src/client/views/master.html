@@ -1,0 +1,25 @@
+<section id="viewMaster" data-view class="absolute inset-0 hidden-section overflow-auto bg-slate-100 p-4 md:p-6">
+          <div class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <p class="text-sm font-semibold text-brand-orange">Administrasi</p>
+              <h2 id="masterTitle" class="text-2xl font-semibold text-slate-900">Role</h2>
+              <p id="masterLead" class="mt-1 text-sm text-slate-500">Kelola data referensi. Perubahan tetap tersimpan setelah halaman dimuat ulang.</p>
+            </div>
+            <button type="button" id="masterAddBtn" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-orange px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg">
+              <i class="fa-solid fa-plus"></i> Tambah
+            </button>
+          </div>
+          <div id="masterTableCard" class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="min-w-[640px] w-full text-left text-sm">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                  <tr id="masterHead"></tr>
+                </thead>
+                <tbody id="masterBody"></tbody>
+              </table>
+            </div>
+            <div class="border-t border-slate-100 px-4 py-3 text-xs text-slate-500">
+              <p id="masterCount">0 data</p>
+            </div>
+          </div>
+        </section>

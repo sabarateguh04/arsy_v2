@@ -16,8 +16,10 @@
   "profile.html",
   "menu-admin.html",
   "users.html",
+  "master.html",
   "dashboard-close.html",
   "news-modal.html",
   "user-modal.html",
+  "master-modal.html",
   "assistant.html"
 ]

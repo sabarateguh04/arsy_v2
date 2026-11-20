@@ -9,9 +9,17 @@ if (fs.existsSync(envFile)) {
   });
 }
 
+const { migrate } = require("./db");
 const app = require("./app");
 const port = Number(process.env.PORT) || 3005;
 
-app.listen(port, () => {
-  console.log("ARSY berjalan di http://localhost:" + port);
-});
+migrate()
+  .then(() => {
+    app.listen(port, () => {
+      console.log("ARSY berjalan di http://localhost:" + port);
+    });
+  })
+  .catch((error) => {
+    console.error("Database belum siap: " + error.message);
+    process.exit(1);
+  });

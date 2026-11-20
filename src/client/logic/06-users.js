@@ -45,14 +45,35 @@
       }).join("");
     }
 
-    const USER_FIELDS = ["userName", "userEmail", "userPassword", "userRole", "userProvinsi", "userKota", "userStatus"];
+    const USER_FIELDS = ["userName", "userEmail", "userPassword", "userRole", "userJabatan", "userProvinsi", "userKota", "userStatus"];
+
+    function fillUserRoles(selected) {
+      const select = document.getElementById("userRole");
+      const rows = (masterCatalog.roles || []).filter((item) => item.status === "Aktif");
+      const names = rows.length ? rows.map((item) => item.name) : ["Admin"].concat(ACCESS_ROLES);
+      if (selected && !names.includes(selected)) names.unshift(selected);
+      select.innerHTML = names.map((name) => `<option>${esc(name)}</option>`).join("");
+      select.value = names.includes(selected) ? selected : names[0];
+    }
+
+    function fillUserJabatan(role, jabatan) {
+      const select = document.getElementById("userJabatan");
+      const rows = (masterCatalog.jabatan || []).filter((item) => item.status === "Aktif" && (!item.role_name || item.role_name === role));
+      const names = rows.map((item) => item.name);
+      if (!names.length) names.push(role);
+      if (jabatan && !names.includes(jabatan)) names.unshift(jabatan);
+      select.innerHTML = names.map((name) => `<option>${esc(name)}</option>`).join("");
+      select.value = names.includes(jabatan) ? jabatan : names[0];
+    }
 
     function syncUserScopeFields(user, locked) {
       const role = document.getElementById("userRole").value;
-      const national = role === "Admin" || role === "Eksekutif 1";
-      const provinceOnly = role === "Eksekutif 2";
+      const cakupan = roleCakupan(role);
+      const national = cakupan === "nasional";
+      const provinceOnly = cakupan === "provinsi";
       const provinsiSelect = document.getElementById("userProvinsi");
       const kotaSelect = document.getElementById("userKota");
+      fillUserJabatan(role, user && user.jabatan);
       if (national) {
         provinsiSelect.innerHTML = "<option>Nasional</option>";
         kotaSelect.innerHTML = "<option>—</option>";
@@ -68,7 +89,7 @@
       document.getElementById("userName").value = user.name;
       document.getElementById("userEmail").value = user.email;
       document.getElementById("userPassword").value = user.password || "";
-      document.getElementById("userRole").value = user.role;
+      fillUserRoles(user.role);
       document.getElementById("userStatus").value = user.status;
       syncUserScopeFields(user, locked);
       USER_FIELDS.forEach((id) => {
@@ -77,7 +98,8 @@
       });
     }
 
-    function openUserModal(mode, index) {
+    async function openUserModal(mode, index) {
+      await loadCatalog();
       userMode = mode;
       userIndex = index;
       const titles = {
@@ -91,7 +113,7 @@
       document.getElementById("userSaveBtn").classList.toggle("hidden-section", mode === "view" || mode === "delete");
       document.getElementById("userSaveBtn").textContent = mode === "create" ? "Tambah" : "Simpan";
       document.getElementById("userDeleteBtn").classList.toggle("hidden-section", mode !== "delete");
-      const blank = { name: "", email: "", password: "arsy1234", role: "Operator", provinsi: "DKI Jakarta", kota: "Jakarta Pusat", status: "Aktif" };
+      const blank = { name: "", email: "", password: "arsy1234", role: "Operator", jabatan: "Operator", provinsi: "DKI Jakarta", kota: "Jakarta Pusat", status: "Aktif" };
       const current = index >= 0 ? users[index] : blank;
       setUserFields(current, mode === "view" || mode === "delete");
       document.getElementById("userModal").classList.remove("hidden-section");
@@ -105,22 +127,34 @@
     }
 
     function readUserForm() {
-      return {
+      const password = document.getElementById("userPassword").value.trim();
+      const draft = {
         name: document.getElementById("userName").value.trim(),
         email: document.getElementById("userEmail").value.trim(),
-        password: document.getElementById("userPassword").value.trim() || "arsy1234",
         role: document.getElementById("userRole").value,
+        jabatan: document.getElementById("userJabatan").value,
         provinsi: document.getElementById("userProvinsi").value === "Nasional" ? "" : document.getElementById("userProvinsi").value,
         kota: document.getElementById("userKota").value === "—" ? "" : document.getElementById("userKota").value,
         polda: document.getElementById("userProvinsi").value === "Nasional" ? "" : poldaKey(document.getElementById("userProvinsi").value),
         status: document.getElementById("userStatus").value
       };
+      if (userMode === "create") draft.password = password || "arsy1234";
+      else if (password) draft.password = password;
+      return draft;
     }
 
-    function nextUserId() {
-      const max = users.reduce((highest, user) => {
-        const num = parseInt(user.id.replace("USR-", ""), 10);
-        return Number.isFinite(num) ? Math.max(highest, num) : highest;
-      }, 2400);
-      return "USR-" + (max + 1);
+    function showUserError(message) {
+      const email = document.getElementById("userEmail");
+      email.setCustomValidity(message || "");
+      if (message) email.reportValidity();
+    }
+
+    async function loadUsers() {
+      const response = await fetch("/api/users");
+      if (!response.ok) return false;
+      const rows = await response.json();
+      if (!Array.isArray(rows)) return false;
+      users = rows;
+      renderUsers();
+      return true;
     }
