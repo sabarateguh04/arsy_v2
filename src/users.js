@@ -176,6 +176,14 @@ async function deleteUser(id, actorId) {
   return { ok: true };
 }
 
+async function currentPublicUser(req) {
+  const session = readSession(req);
+  if (!session) return null;
+  const row = await findById(session.id);
+  if (!row || row.status !== "Aktif") return null;
+  return publicUser(row);
+}
+
 async function login(email, password) {
   const user = await findByEmail(email);
   if (!user || user.status !== "Aktif") return null;
@@ -191,6 +199,7 @@ module.exports = {
   setSessionCookie,
   clearSessionCookie,
   listUsers,
+  currentPublicUser,
   createUser,
   updateUser,
   deleteUser,

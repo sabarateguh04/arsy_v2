@@ -18,6 +18,7 @@
         operatorDashboard: "Command Center · ARSY"
       };
       document.title = titles[pageId] || titles.publicPortal;
+      if (typeof syncAleshaVisibility === "function") syncAleshaVisibility(pageId === "operatorDashboard" && !!session);
       if (pageId === "operatorDashboard") {
         paintSession();
         applyMenuAccess();

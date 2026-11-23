@@ -265,4 +265,80 @@ router.delete("/reports/:id", async (req, res) => {
   res.json({ ok: true });
 });
 
+router.post("/ai-chat/send", async (req, res) => {
+  try {
+    const user = await users.currentPublicUser(req);
+    if (!user) {
+      res.status(401).json({ error: "Masuk dulu." });
+      return;
+    }
+    const message = text(req.body && req.body.message, 4000);
+    const files = Array.isArray(req.body && req.body.files) ? req.body.files.slice(0, 4).map((item) => ({
+      name: text(item && item.name, 180) || "berkas",
+      type: text(item && item.type, 120),
+      size: Number(item && item.size) || 0,
+      base64: String(item && item.base64 || "").slice(0, 12000000)
+    })).filter((item) => item.base64) : [];
+    const audioRaw = req.body && req.body.audio;
+    const audio = audioRaw && audioRaw.base64 ? {
+      name: text(audioRaw.name, 80) || "voicenote.webm",
+      base64: String(audioRaw.base64).slice(0, 12000000),
+      duration: Number(audioRaw.duration) || 0
+    } : null;
+    if (!message && !files.length && !audio) {
+      res.status(400).json({ error: "Pesan, rekaman suara, atau berkas tidak boleh kosong." });
+      return;
+    }
+    let sessionId = text(req.body && req.body.sessionId, 80);
+    if (sessionId && !sessionId.startsWith("arsy-")) sessionId = "";
+    const nasional = user.cakupan === "nasional";
+    const provinsi = nasional ? "" : (user.provinsi || "");
+    const kota = user.cakupan === "kota" ? (user.kota || "") : "";
+    const payload = {
+      message,
+      session_id: sessionId,
+      files,
+      audio,
+      context_app: "sm-arsy",
+      user_category: "sm-arsy",
+      user_role: user.role,
+      user_fullname: user.name,
+      login_user_id: user.id,
+      organization_level: user.cakupan,
+      executive_level: user.cakupan,
+      user_polda: provinsi,
+      user_polres: kota,
+      provinsi,
+      kota,
+      client_ip: req.ip || ""
+    };
+    const base = String(process.env.ALESHA_API_URL || "https://alesha-be.djalu.co.id").replace(/\/+$/, "");
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 60000);
+    let response;
+    try {
+      response = await fetch(base + "/api/chat/arsy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timer);
+    }
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.success === false) {
+      res.status(502).json({ error: data.message || "Alesha belum bisa menjawab." });
+      return;
+    }
+    res.json({
+      reply: data.reply || data.response || "",
+      sessionId: data.session_id || sessionId,
+      source: data.source || null
+    });
+  } catch (error) {
+    res.status(502).json({ error: "Alesha belum terhubung." });
+  }
+});
+
 module.exports = router;

@@ -11,7 +11,8 @@ const ENV_DEFAULTS = {
   DB_USER: "db_arsy",
   DB_PASSWORD: "db_arsy",
   DB_NAME: "db_arsy",
-  DB_POOL: "20"
+  DB_POOL: "20",
+  ALESHA_API_URL: "https://alesha-be.djalu.co.id"
 };
 
 const MYSQL_ALIASES = {
