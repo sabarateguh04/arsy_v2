@@ -34,7 +34,7 @@
                 <label>
                   <span>Bulan</span>
                   <select id="safeMonth" class="safe-select" aria-label="Bulan">
-                    <option value="all" selected>Semua</option>
+                    <option value="all">Semua</option>
                     <option value="1">Januari</option>
                     <option value="2">Februari</option>
                     <option value="3">Maret</option>
@@ -45,7 +45,7 @@
                     <option value="8">Agustus</option>
                     <option value="9">September</option>
                     <option value="10">Oktober</option>
-                    <option value="11">November</option>
+                    <option value="11" selected>November</option>
                     <option value="12">Desember</option>
                   </select>
                 </label>
@@ -195,7 +195,8 @@
                 <div id="safeQuarterChart" class="mt-2"></div>
               </article>
               <article class="rounded-xl bg-[#0c2348] p-4 text-white shadow-lg lg:col-start-1 lg:row-start-3">
-                <h3 class="text-sm font-bold tracking-wide">TREND PER BULAN <span class="safe-metric-name font-semibold text-sky-200">Case Fatality Rate</span></h3>
+                <h3 class="text-sm font-bold tracking-wide">TREND CFR NASIONAL</h3>
+                <p class="mt-1 text-[11px] leading-snug text-sky-200/80">Arahkan kursor ke titik, klik bulan untuk memuat tabel. Filter: Polda, Polres, Tahun, Bulan.</p>
                 <div id="safeMonthChart" class="mt-2"></div>
               </article>
               <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-lg lg:col-start-2 lg:row-start-1 lg:self-stretch">
@@ -213,18 +214,18 @@
               </article>
               <article class="flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg lg:col-start-2 lg:row-span-2 lg:row-start-2 lg:h-0 lg:min-h-full lg:self-stretch">
                 <div class="px-4 pb-2 pt-4">
-                  <h3 id="safeTableTitle" class="text-sm font-bold text-slate-900">Case Fatality Rate</h3>
-                  <p id="safeTableScope" class="text-[11px] leading-snug text-slate-500">per Polda vs Proyeksi Tanpa Intervensi RUNK Nasional</p>
+                  <h3 id="safeTableTitle" class="text-sm font-bold text-slate-900">Tabel Kinerja Keselamatan Bulan ini</h3>
+                  <p id="safeTableScope" class="text-[11px] leading-snug text-slate-500">CFR = MD / Laka · MR per 100.000 penduduk (BPS) · perubahan vs bulan lalu</p>
                 </div>
                 <div id="safePoldaScroll" class="min-h-0 flex-1 overflow-auto">
                   <table class="w-full text-left text-[11px]">
                     <thead class="sticky top-0 bg-white text-[11px] text-[#1d4ed8]">
                       <tr class="border-y border-slate-200">
                         <th class="px-3 py-2 font-semibold">Polda</th>
-                        <th class="px-2 py-2 text-right font-semibold">MD</th>
-                        <th class="px-2 py-2 text-right font-semibold">Laka</th>
-                        <th class="px-2 py-2 text-right font-semibold">Rank</th>
-                        <th class="px-3 py-2 text-right font-semibold">CFR</th>
+                        <th class="px-2 py-2 text-right font-semibold">CFR</th>
+                        <th class="px-2 py-2 text-right font-semibold">Perubahan</th>
+                        <th class="px-2 py-2 text-right font-semibold">MR</th>
+                        <th class="px-3 py-2 text-right font-semibold">Perubahan</th>
                       </tr>
                     </thead>
                     <tbody id="safePoldaBody"></tbody>

@@ -191,6 +191,51 @@ async function login(email, password) {
   return publicUser(user);
 }
 
+async function registerAreas() {
+  const [provinsiRows, kotaRows] = await Promise.all([
+    query("SELECT name FROM provinsi WHERE status = 'Aktif' ORDER BY name"),
+    query("SELECT name, provinsi FROM kota WHERE status = 'Aktif' ORDER BY provinsi, name")
+  ]);
+  const areas = {};
+  provinsiRows.forEach((row) => {
+    areas[row.name] = [];
+  });
+  kotaRows.forEach((row) => {
+    if (!areas[row.provinsi]) areas[row.provinsi] = [];
+    areas[row.provinsi].push(row.name);
+  });
+  return areas;
+}
+
+async function register(body) {
+  const name = String((body && body.name) || "").trim().slice(0, 160);
+  const email = String((body && body.email) || "").trim().toLowerCase().slice(0, 190);
+  const password = String((body && body.password) || "").trim();
+  const confirm = String((body && body.confirm) || "").trim();
+  const provinsi = String((body && body.provinsi) || "").trim().slice(0, 120);
+  const kota = String((body && body.kota) || "").trim().slice(0, 120);
+  if (!name) return { error: "Nama wajib diisi." };
+  if (!email || !email.includes("@")) return { error: "Email tidak valid." };
+  if (password.length < 4) return { error: "Kata sandi terlalu pendek." };
+  if (confirm && confirm !== password) return { error: "Konfirmasi kata sandi tidak sama." };
+  if (!provinsi || !kota) return { error: "Provinsi dan kota wajib diisi." };
+  const match = await query(
+    "SELECT name FROM kota WHERE name = ? AND provinsi = ? AND status = 'Aktif' LIMIT 1",
+    [kota, provinsi]
+  );
+  if (!match.length) return { error: "Provinsi atau kota tidak valid." };
+  return createUser({
+    name,
+    email,
+    password,
+    role: "Operator",
+    jabatan: "Operator",
+    provinsi,
+    kota,
+    status: "Aktif"
+  });
+}
+
 module.exports = {
   publicUser,
   createSession,
@@ -203,5 +248,7 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  login
+  login,
+  register,
+  registerAreas
 };

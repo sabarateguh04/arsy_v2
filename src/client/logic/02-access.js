@@ -167,9 +167,11 @@
         const node = document.getElementById("count" + type);
         if (node) node.textContent = String(count);
       });
+      const where = roleLevel(session) === "nasional" ? "seluruh wilayah" : scopeLabel(session);
+      const hintText = "Cakupan " + where + ". Garis biru adalah jalur kereta. Gunakan layer GIS untuk CCTV, lapgiat, macet, dan JPL.";
       const hint = document.getElementById("mapHint");
-      if (hint) {
-        const where = roleLevel(session) === "nasional" ? "seluruh wilayah" : scopeLabel(session);
-        hint.textContent = "Cakupan " + where + ". Garis biru adalah jalur kereta. Klik palang atau titik gangguan untuk rincian.";
-      }
+      if (hint) hint.textContent = hintText;
+      const lead = document.getElementById("mapInfoLead");
+      if (lead) lead.textContent = hintText;
+      applyGisScope();
     }

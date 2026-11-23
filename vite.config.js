@@ -18,7 +18,7 @@ function appModule() {
     'import Chart from "chart.js/auto";',
     "window.Chart = Chart;",
     logic,
-    "window.showPage = showPage;"
+    "window.showPage = showPage; window.showAuth = showAuth;"
   ].join("\n");
 }
 

@@ -37,6 +37,15 @@ document.getElementById("accountLogout").addEventListener("click", () => {
   showPage("publicPortal");
 });
 
+async function enterSession(found) {
+  if (!menuGrants) menuGrants = buildDefaultGrants();
+  session = found;
+  await loadCatalog();
+  if (session.role === "Admin") await loadUsers();
+  activeView = canOpen("viewMap") ? "viewMap" : "viewKeselamatan";
+  showPage("operatorDashboard");
+}
+
 async function attemptLogin(email, password) {
   await stateReady;
   const error = document.getElementById("loginError");
@@ -64,12 +73,40 @@ async function attemptLogin(email, password) {
     return;
   }
   error.classList.add("hidden");
-  if (!menuGrants) menuGrants = buildDefaultGrants();
-  session = found;
-  await loadCatalog();
-  if (session.role === "Admin") await loadUsers();
-  activeView = canOpen("viewMap") ? "viewMap" : "viewKeselamatan";
-  showPage("operatorDashboard");
+  await enterSession(found);
+}
+
+let registerAreas = null;
+function fillRegisterKota() {
+  const provinsi = document.getElementById("registerProvinsi").value;
+  const kotaSelect = document.getElementById("registerKota");
+  const cities = (registerAreas && registerAreas[provinsi]) || [];
+  kotaSelect.innerHTML = '<option value="">Pilih kota</option>' + cities.map((name) => '<option>' + name.replace(/</g, "") + "</option>").join("");
+}
+async function fillRegisterAreas() {
+  if (!registerAreas) {
+    try {
+      const response = await fetch("/api/register/areas");
+      const data = response.ok ? await response.json() : {};
+      registerAreas = data.areas || {};
+    } catch (error) {
+      registerAreas = {};
+    }
+  }
+  const provinsiSelect = document.getElementById("registerProvinsi");
+  const names = Object.keys(registerAreas);
+  const current = provinsiSelect.value;
+  provinsiSelect.innerHTML = '<option value="">Pilih provinsi</option>' + names.map((name) => '<option>' + name.replace(/</g, "") + "</option>").join("");
+  if (names.includes(current)) provinsiSelect.value = current;
+  fillRegisterKota();
+}
+function showAuth(mode) {
+  showPage("loginPage");
+  const isRegister = mode === "register";
+  document.getElementById("loginPanel").classList.toggle("hidden-section", isRegister);
+  document.getElementById("registerPanel").classList.toggle("hidden-section", !isRegister);
+  document.title = isRegister ? "Daftar · ARSY" : "Masuk · ARSY";
+  if (isRegister) fillRegisterAreas();
 }
 
 async function loadCatalog() {
@@ -102,12 +139,42 @@ document.getElementById("loginForm").addEventListener("submit", (event) => {
   event.preventDefault();
   attemptLogin(document.getElementById("loginEmail").value, document.getElementById("passwordInput").value);
 });
-document.querySelectorAll("[data-demo]").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.getElementById("loginEmail").value = button.dataset.demo;
-    document.getElementById("passwordInput").value = "arsy1234";
-    attemptLogin(button.dataset.demo, "arsy1234");
-  });
+document.getElementById("registerProvinsi").addEventListener("change", fillRegisterKota);
+document.getElementById("registerForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const error = document.getElementById("registerError");
+  const password = document.getElementById("registerPassword").value;
+  const confirm = document.getElementById("registerConfirm").value;
+  if (password !== confirm) {
+    error.textContent = "Konfirmasi kata sandi tidak sama.";
+    error.classList.remove("hidden");
+    return;
+  }
+  error.classList.add("hidden");
+  try {
+    const response = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: document.getElementById("registerName").value,
+        email: document.getElementById("registerEmail").value,
+        password,
+        confirm,
+        provinsi: document.getElementById("registerProvinsi").value,
+        kota: document.getElementById("registerKota").value
+      })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      error.textContent = data.error || "Pendaftaran belum berhasil.";
+      error.classList.remove("hidden");
+      return;
+    }
+    await enterSession(data);
+  } catch (err) {
+    error.textContent = "Layanan akun belum siap. Coba lagi.";
+    error.classList.remove("hidden");
+  }
 });
 document.getElementById("menuGrantBody").addEventListener("change", (event) => {
   const box = event.target.closest("[data-grant-key]");
@@ -141,6 +208,7 @@ document.addEventListener("click", (event) => {
 ["AG", "PG", "GN", "KA"].forEach((type) => {
   document.getElementById("layer" + type).addEventListener("change", () => setLayerVisibility(type));
 });
+bindMapGis();
 document.getElementById("closePointPanel").addEventListener("click", closePoint);
 document.getElementById("recenterMap").addEventListener("click", () => {
   closePoint();
@@ -263,4 +331,3 @@ paintSafePanel();
 tickClock();
 setInterval(tickClock, 1000);
 showPage("publicPortal");
-

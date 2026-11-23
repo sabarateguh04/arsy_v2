@@ -19,6 +19,14 @@
       };
       document.title = titles[pageId] || titles.publicPortal;
       if (typeof syncAleshaVisibility === "function") syncAleshaVisibility(pageId === "operatorDashboard" && !!session);
+      if (pageId === "loginPage") {
+        const loginPanel = document.getElementById("loginPanel");
+        const registerPanel = document.getElementById("registerPanel");
+        if (loginPanel && registerPanel) {
+          loginPanel.classList.remove("hidden-section");
+          registerPanel.classList.add("hidden-section");
+        }
+      }
       if (pageId === "operatorDashboard") {
         paintSession();
         applyMenuAccess();

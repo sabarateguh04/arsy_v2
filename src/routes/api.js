@@ -65,6 +65,28 @@ router.post("/logout", (req, res) => {
   res.json({ ok: true });
 });
 
+router.get("/register/areas", async (req, res) => {
+  try {
+    res.json({ areas: await users.registerAreas() });
+  } catch (error) {
+    res.status(503).json({ error: "Wilayah belum siap. Coba lagi." });
+  }
+});
+
+router.post("/register", async (req, res) => {
+  try {
+    const result = await users.register(req.body || {});
+    if (result.error) {
+      res.status(result.status || 400).json({ error: result.error });
+      return;
+    }
+    users.setSessionCookie(res, users.createSession(result.user));
+    res.status(201).json(result.user);
+  } catch (error) {
+    res.status(500).json({ error: "Pendaftaran belum bisa disimpan." });
+  }
+});
+
 router.get("/users", async (req, res) => {
   if (!requireAdmin(req, res)) return;
   try {

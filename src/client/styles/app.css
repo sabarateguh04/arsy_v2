@@ -383,6 +383,71 @@
       width: 0.9rem;
     }
     .grant-toggle-demo span.is-on::after { transform: translateX(0.75rem); }
+    #safeTrend,
+    #safeYearChart,
+    #safeQuarterChart,
+    #safeMonthChart {
+      position: relative;
+    }
+    .safe-chart-hit {
+      cursor: pointer;
+    }
+    .safe-chart-tip {
+      position: absolute;
+      z-index: 6;
+      pointer-events: none;
+      min-width: 8.75rem;
+      max-width: 14rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: #071433;
+      color: #fff;
+      padding: 0.5rem 0.7rem;
+      font-size: 11px;
+      line-height: 1.4;
+      box-shadow: 0 12px 28px rgba(7, 20, 51, 0.4);
+    }
+    .safe-chart-dot {
+      transition: r 0.15s ease, filter 0.15s ease;
+    }
+    .safe-chart-hit.is-hot .safe-chart-dot,
+    .safe-chart-hit.is-on .safe-chart-dot {
+      filter: drop-shadow(0 0 7px rgba(56, 189, 248, 0.9));
+    }
+    .map-desk-tab.is-on {
+      background: #7c3aed;
+      color: #fff;
+    }
+    .gis-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0;
+      font-size: 13px;
+      color: #334155;
+      cursor: pointer;
+    }
+    .gis-row span { flex: 1; }
+    .gis-row input {
+      height: 1rem;
+      width: 1rem;
+      accent-color: #2563eb;
+      cursor: pointer;
+    }
+    .jpl-legend {
+      display: flex;
+      width: 100%;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.2rem 0;
+      font-size: 11px;
+      line-height: 1.35;
+      color: #475569;
+    }
+    .jpl-legend:not(.is-on) { opacity: 0.38; }
+    @media (max-width: 767px) {
+      #mapGisPanel:not(.is-open) { display: none; }
+    }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after {

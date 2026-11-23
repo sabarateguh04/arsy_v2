@@ -64,41 +64,46 @@
       { year: 2026, fi: 12.38, cut: 20.02 }
     ];
     const SAFE_POLDA = [
-      { name: "Polda Kepulauan Riau", provinces: ["Kepulauan Riau"], md: 54, laka: 1874 },
-      { name: "Polda DI Yogyakarta", provinces: ["Yogyakarta"], md: 318, laka: 6929 },
-      { name: "Polda Metro Jaya", provinces: ["Jakarta Raya"], md: 596, laka: 10550 },
-      { name: "Polda Bali", provinces: ["Bali"], md: 452, laka: 8104 },
-      { name: "Polda Papua", provinces: ["Papua", "Papua Pegunungan", "Papua Selatan", "Papua Tengah"], md: 142, laka: 2210 },
-      { name: "Polda Sulawesi Selatan", provinces: ["Sulawesi Selatan"], md: 545, laka: 6519 },
-      { name: "Polda Nusa Tenggara Barat", provinces: ["Nusa Tenggara Barat"], md: 273, laka: 2831 },
-      { name: "Polda Jawa Tengah", provinces: ["Jawa Tengah"], md: 3182, laka: 31086 },
-      { name: "Polda Sumatera Barat", provinces: ["Sumatera Barat"], md: 323, laka: 3147 },
-      { name: "Polda Sulawesi Barat", provinces: ["Sulawesi Barat"], md: 84, laka: 765 },
-      { name: "Polda Sulawesi Utara", provinces: ["Sulawesi Utara"], md: 217, laka: 2053 },
-      { name: "Polda Papua Barat", provinces: ["Papua Barat", "Papua Barat Daya"], md: 52, laka: 348 },
-      { name: "Polda Lampung", provinces: ["Lampung"], md: 509, laka: 3981 },
-      { name: "Polda Bengkulu", provinces: ["Bengkulu"], md: 180, laka: 1314 },
-      { name: "Polda Jawa Barat", provinces: ["Jawa Barat"], md: 1329, laka: 8935 },
-      { name: "Polda Sulawesi Tenggara", provinces: ["Sulawesi Tenggara"], md: 243, laka: 1627 },
-      { name: "Polda Jawa Timur", provinces: ["Jawa Timur"], md: 4162, laka: 27760 },
-      { name: "Polda Jambi", provinces: ["Jambi"], md: 316, laka: 1926 },
-      { name: "Polda Banten", provinces: ["Banten"], md: 186, laka: 1399 },
-      { name: "Polda Kalimantan Utara", provinces: ["Kalimantan Utara"], md: 45, laka: 272 },
-      { name: "Polda Aceh", provinces: ["Aceh"], md: 508, laka: 2766 },
-      { name: "Polda Sumatera Selatan", provinces: ["Sumatera Selatan"], md: 677, laka: 3489 },
-      { name: "Polda Riau", provinces: ["Riau"], md: 544, laka: 2711 },
-      { name: "Polda Sumatera Utara", provinces: ["Sumatera Utara"], md: 1149, laka: 5291 },
-      { name: "Polda Nusa Tenggara Timur", provinces: ["Nusa Tenggara Timur"], md: 271, laka: 1322 },
-      { name: "Polda Gorontalo", provinces: ["Gorontalo"], md: 92, laka: 391 },
-      { name: "Polda Maluku", provinces: ["Maluku"], md: 100, laka: 391 },
-      { name: "Polda Kalimantan Selatan", provinces: ["Kalimantan Selatan"], md: 193, laka: 747 },
-      { name: "Polda Babel", provinces: ["Kepulauan Bangka Belitung"], md: 70, laka: 1400 },
-      { name: "Polda Kalimantan Barat", provinces: ["Kalimantan Barat"], md: 120, laka: 900 },
-      { name: "Polda Kalimantan Tengah", provinces: ["Kalimantan Tengah"], md: 180, laka: 700 },
-      { name: "Polda Kalimantan Timur", provinces: ["Kalimantan Timur"], md: 280, laka: 800 },
-      { name: "Polda Sulawesi Tengah", provinces: ["Sulawesi Tengah"], md: 280, laka: 600 },
-      { name: "Polda Maluku Utara", provinces: ["Maluku Utara"], md: 364, laka: 535 }
+      { name: "Polda Aceh", provinces: ["Aceh"], md: 508, laka: 2766, people: 5533739 },
+      { name: "Polda Sumatera Utara", provinces: ["Sumatera Utara"], md: 1149, laka: 5291, people: 15588525 },
+      { name: "Polda Sumatera Barat", provinces: ["Sumatera Barat"], md: 323, laka: 3147, people: 5757210 },
+      { name: "Polda Riau", provinces: ["Riau"], md: 544, laka: 2711, people: 6836627 },
+      { name: "Polda Kepulauan Riau", provinces: ["Kepulauan Riau"], md: 54, laka: 1874, people: 2183236 },
+      { name: "Polda Jambi", provinces: ["Jambi"], md: 316, laka: 1926, people: 3758970 },
+      { name: "Polda Sumatera Selatan", provinces: ["Sumatera Selatan"], md: 677, laka: 3489, people: 8856804 },
+      { name: "Polda Babel", provinces: ["Kepulauan Bangka Belitung"], md: 70, laka: 1400, people: 1517157 },
+      { name: "Polda Bengkulu", provinces: ["Bengkulu"], md: 180, laka: 1314, people: 2086006 },
+      { name: "Polda Lampung", provinces: ["Lampung"], md: 509, laka: 3981, people: 9313990 },
+      { name: "Polda Metro Jaya", provinces: ["Jakarta Raya"], md: 596, laka: 10550, people: 10672100 },
+      { name: "Polda Banten", provinces: ["Banten"], md: 186, laka: 1399, people: 12431409 },
+      { name: "Polda Jawa Barat", provinces: ["Jawa Barat"], md: 1329, laka: 8935, people: 49860330 },
+      { name: "Polda Jawa Tengah", provinces: ["Jawa Tengah"], md: 3182, laka: 31086, people: 37032410 },
+      { name: "Polda DI Yogyakarta", provinces: ["Yogyakarta"], md: 318, laka: 6929, people: 3759500 },
+      { name: "Polda Jawa Timur", provinces: ["Jawa Timur"], md: 4162, laka: 27760, people: 41240072 },
+      { name: "Polda Bali", provinces: ["Bali"], md: 452, laka: 8104, people: 4404498 },
+      { name: "Polda Nusa Tenggara Barat", provinces: ["Nusa Tenggara Barat"], md: 273, laka: 2831, people: 5646092 },
+      { name: "Polda Nusa Tenggara Timur", provinces: ["Nusa Tenggara Timur"], md: 271, laka: 1322, people: 5656195 },
+      { name: "Polda Kalimantan Barat", provinces: ["Kalimantan Barat"], md: 120, laka: 900, people: 5623328 },
+      { name: "Polda Kalimantan Tengah", provinces: ["Kalimantan Tengah"], md: 180, laka: 700, people: 2809651 },
+      { name: "Polda Kalimantan Selatan", provinces: ["Kalimantan Selatan"], md: 193, laka: 747, people: 4222440 },
+      { name: "Polda Kalimantan Timur", provinces: ["Kalimantan Timur"], md: 280, laka: 800, people: 3936588 },
+      { name: "Polda Kalimantan Utara", provinces: ["Kalimantan Utara"], md: 45, laka: 272, people: 746211 },
+      { name: "Polda Sulawesi Utara", provinces: ["Sulawesi Utara"], md: 217, laka: 2053, people: 2685639 },
+      { name: "Polda Gorontalo", provinces: ["Gorontalo"], md: 92, laka: 391, people: 1213178 },
+      { name: "Polda Sulawesi Tengah", provinces: ["Sulawesi Tengah"], md: 280, laka: 600, people: 3154383 },
+      { name: "Polda Sulawesi Selatan", provinces: ["Sulawesi Selatan"], md: 545, laka: 6519, people: 9400974 },
+      { name: "Polda Sulawesi Tenggara", provinces: ["Sulawesi Tenggara"], md: 243, laka: 1627, people: 2759220 },
+      { name: "Polda Sulawesi Barat", provinces: ["Sulawesi Barat"], md: 84, laka: 765, people: 1481077 },
+      { name: "Polda Maluku", provinces: ["Maluku"], md: 100, laka: 391, people: 1945283 },
+      { name: "Polda Maluku Utara", provinces: ["Maluku Utara"], md: 364, laka: 535, people: 1355640 },
+      { name: "Polda Papua Barat", provinces: ["Papua Barat"], md: 30, laka: 200, people: 561403 },
+      { name: "Polda Papua Barat Daya", provinces: ["Papua Barat Daya"], md: 22, laka: 148, people: 623192 },
+      { name: "Polda Papua", provinces: ["Papua"], md: 42, laka: 680, people: 1073334 },
+      { name: "Polda Papua Tengah", provinces: ["Papua Tengah"], md: 38, laka: 560, people: 1430970 },
+      { name: "Polda Papua Pegunungan", provinces: ["Papua Pegunungan"], md: 36, laka: 520, people: 1430517 },
+      { name: "Polda Papua Selatan", provinces: ["Papua Selatan"], md: 26, laka: 450, people: 533731 }
     ];
+    const SAFE_MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
     let safeTab = "cfr";
     let safeGeo = null;
     let safeView = { x: 0, y: 0, k: 1, w: 0, h: 0 };
@@ -143,6 +148,7 @@
       if (polres !== "all") share *= 0.34;
       return {
         year,
+        month,
         polda,
         share,
         yearFactor,
@@ -150,6 +156,77 @@
         deaths: SAFE_NATIONAL.deaths * yearFactor * monthFactor * share,
         crashes: SAFE_NATIONAL.crashes * yearFactor * monthFactor * share
       };
+    }
+
+    function paintSafeChartTip(hit) {
+      const label = hit.getAttribute("data-safe-label") || "";
+      const cfr = hit.getAttribute("data-safe-cfr");
+      const md = hit.getAttribute("data-safe-md");
+      const laka = hit.getAttribute("data-safe-laka");
+      const more = hit.getAttribute("data-safe-more");
+      let html = `<p class="font-semibold">${esc(label)}</p>`;
+      if (cfr) html += `<p>CFR ${esc(cfr)}</p>`;
+      if (md) html += `<p>MD ${esc(md)}</p>`;
+      if (laka) html += `<p>Laka ${esc(laka)}</p>`;
+      if (more) html += `<p>${esc(more)}</p>`;
+      html += `<p class="mt-1 text-[10px] text-sky-200">Klik untuk menampilkan data ini</p>`;
+      return html;
+    }
+
+    function bindSafeChartHost(host) {
+      if (!host || host.dataset.chartBound === "1") return;
+      host.dataset.chartBound = "1";
+      const ensureTip = () => {
+        let tip = host.querySelector(".safe-chart-tip");
+        if (!tip) {
+          tip = document.createElement("div");
+          tip.className = "safe-chart-tip hidden";
+          host.appendChild(tip);
+        }
+        return tip;
+      };
+      host.addEventListener("pointermove", (event) => {
+        const hit = event.target.closest("[data-safe-pick]");
+        const tip = ensureTip();
+        host.querySelectorAll(".safe-chart-hit.is-hot").forEach((node) => node.classList.remove("is-hot"));
+        if (!hit || !host.contains(hit)) {
+          tip.classList.add("hidden");
+          return;
+        }
+        hit.classList.add("is-hot");
+        tip.innerHTML = paintSafeChartTip(hit);
+        tip.classList.remove("hidden");
+        const rect = host.getBoundingClientRect();
+        let x = event.clientX - rect.left + 14;
+        let y = event.clientY - rect.top - 10;
+        if (x + 168 > rect.width) x = event.clientX - rect.left - 160;
+        if (y < 6) y = event.clientY - rect.top + 18;
+        tip.style.left = x + "px";
+        tip.style.top = y + "px";
+      });
+      host.addEventListener("pointerleave", () => {
+        const tip = host.querySelector(".safe-chart-tip");
+        if (tip) tip.classList.add("hidden");
+        host.querySelectorAll(".safe-chart-hit.is-hot").forEach((node) => node.classList.remove("is-hot"));
+      });
+      host.addEventListener("click", (event) => {
+        const hit = event.target.closest("[data-safe-pick]");
+        if (!hit || !host.contains(hit)) return;
+        const year = hit.getAttribute("data-safe-year");
+        const month = hit.getAttribute("data-safe-month");
+        const yearSelect = document.getElementById("safeYear");
+        const monthSelect = document.getElementById("safeMonth");
+        let changed = false;
+        if (year && yearSelect.value !== year) {
+          yearSelect.value = year;
+          changed = true;
+        }
+        if (month && monthSelect.value !== month) {
+          monthSelect.value = month;
+          changed = true;
+        }
+        if (changed) document.getElementById("safeFilters").dispatchEvent(new Event("change", { bubbles: true }));
+      });
     }
 
     function paintSafeTrend(scope) {
@@ -207,12 +284,21 @@
         return `<line x1="${left}" y1="${y.toFixed(1)}" x2="${width - right}" y2="${y.toFixed(1)}" stroke="rgba(255,255,255,0.14)"/><text x="${left - 10}" y="${(y + 4).toFixed(1)}" text-anchor="end" fill="#ffffff" font-size="12">${tickLabel(tick)}</text>`;
       }).join("");
       const years = rows.map((row, index) => `<text x="${xAt(index)}" y="${height - 12}" text-anchor="middle" fill="${row.year === scope.year ? "#ffffff" : "rgba(255,255,255,0.8)"}" font-size="13" font-weight="${row.year === scope.year ? "700" : "500"}">${row.year}</text>`).join("");
+      const colW = plotW / Math.max(rows.length - 1, 1);
+      const hits = rows.map((row, index) => {
+        const x = xAt(index);
+        const on = row.year === scope.year;
+        return `<g class="safe-chart-hit${on ? " is-on" : ""}" data-safe-pick="1" data-safe-year="${row.year}" data-safe-label="${row.year}" data-safe-md="${idNum(row.md)}" data-safe-laka="${idNum(row.laka)}">
+          <rect x="${(x - colW / 2).toFixed(1)}" y="${top}" width="${colW.toFixed(1)}" height="${plotH.toFixed(1)}" fill="${on ? "rgba(255,255,255,0.08)" : "transparent"}"/>
+        </g>`;
+      }).join("");
       host.innerHTML = `<svg viewBox="0 0 ${width} ${height}" class="h-auto w-full" role="img" aria-label="Grafik korban meninggal dan kecelakaan 2021 sampai 2026">
         ${grid}
         <text x="${xAt(1.55)}" y="${(top + 18).toFixed(1)}" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="12">Tahun</text>
         ${series("laka", "#22c55e")}
         ${series("md", "#ef4444")}
         ${years}
+        ${hits}
       </svg>`;
     }
 
@@ -228,6 +314,104 @@
       }
       const mean = raw.reduce((sum, value) => sum + value, 0) / raw.length;
       return raw.map((value) => base * value / mean);
+    }
+
+    function safePoldaInScope(row) {
+      const level = roleLevel(session);
+      if (level === "nasional") return true;
+      if (!session) return false;
+      const key = session.polda || poldaKey(session.provinsi);
+      return row.provinces.includes(key);
+    }
+
+    function safeTableMonth(scope) {
+      if (scope.month && scope.month !== "all") return Number(scope.month);
+      if (scope.year === 2026) return 11;
+      return 12;
+    }
+
+    function safePrevMonth(year, month) {
+      if (month <= 1) return { year: year - 1, month: 12 };
+      return { year, month: month - 1 };
+    }
+
+    function safePoldaSlice(row, year, month) {
+      if (!safePoldaInScope(row)) return { md: 0, laka: 0 };
+      const yearFactor = year === 2026 ? 1 : year === 2025 ? 1.12 : 1.2;
+      const seed = row.name.length;
+      const waveMd = 0.74 + 0.42 * (0.5 + 0.5 * Math.sin((month + seed) * 0.62));
+      const waveLaka = 0.8 + 0.34 * (0.5 + 0.5 * Math.sin((month + seed) * 0.47 + 1.1));
+      const polda = document.getElementById("safePolda").value;
+      const polres = document.getElementById("safePolres").value;
+      const polresFactor = polres !== "all" && polda !== "all" && row.provinces.includes(polda) ? 0.34 : 1;
+      return {
+        md: row.md * yearFactor * (waveMd / 12) * polresFactor,
+        laka: row.laka * yearFactor * (waveLaka / 12) * polresFactor
+      };
+    }
+
+    function safeRates(md, laka, people) {
+      const cfr = laka ? (md / laka) * 100 : 0;
+      const mr = people ? (md / people) * 100000 : 0;
+      return { md, laka, cfr, mr };
+    }
+
+    function safeChangeLabel(now, prev) {
+      if (!now && !prev) return { text: "0%", dir: "flat" };
+      if (!prev) return { text: "", dir: "up" };
+      const pct = ((now - prev) / prev) * 100;
+      if (pct > 0.5) return { text: Math.abs(pct).toFixed(0) + "%", dir: "up" };
+      if (pct < -0.5) return { text: Math.abs(pct).toFixed(0) + "%", dir: "down" };
+      return { text: "0%", dir: "flat" };
+    }
+
+    function safeChangeMarkup(change) {
+      const up = change.dir === "up";
+      const down = change.dir === "down";
+      const icon = up ? "fa-caret-up" : down ? "fa-caret-down" : "fa-minus";
+      const tone = up ? "bg-red-50 text-red-600" : down ? "bg-emerald-50 text-emerald-700" : "bg-slate-50 text-slate-500";
+      const label = up ? "naik" : down ? "turun" : "tetap";
+      return `<span class="inline-flex min-w-[3.4rem] items-center justify-center gap-0.5 rounded-full ${tone} px-1.5 py-0.5 text-[10px] font-semibold" title="Perubahan ${label}"><i class="fa-solid ${icon} text-[11px] leading-none" aria-hidden="true"></i>${esc(change.text)}</span>`;
+    }
+
+    function paintMonthCfrChart(host, points, selectedMonth) {
+      if (!host) return;
+      const width = 720;
+      const height = 210;
+      const left = 44;
+      const right = 16;
+      const top = 16;
+      const bottom = 28;
+      const plotW = width - left - right;
+      const plotH = height - top - bottom;
+      const peak = Math.max.apply(null, points.map((point) => point.cfr).concat([0]));
+      const yMax = peak > 16 ? Math.ceil(peak / 4) * 4 : 16;
+      const ticks = [0, yMax / 2, yMax];
+      const xAt = (index) => left + (plotW * index) / Math.max(points.length - 1, 1);
+      const yAt = (value) => top + plotH - (value / yMax) * plotH;
+      const colW = plotW / Math.max(points.length - 1, 1);
+      const grid = ticks.map((tick) => {
+        const y = yAt(tick);
+        return `<line x1="${left}" y1="${y.toFixed(1)}" x2="${width - right}" y2="${y.toFixed(1)}" stroke="rgba(255,255,255,0.14)"/><text x="${left - 6}" y="${(y + 3).toFixed(1)}" text-anchor="end" fill="rgba(255,255,255,0.82)" font-size="10">${idDec(tick, 0)}%</text>`;
+      }).join("");
+      const line = points.map((point, index) => (index ? "L" : "M") + xAt(index).toFixed(1) + " " + yAt(point.cfr).toFixed(1)).join(" ");
+      const area = line + ` L ${xAt(points.length - 1).toFixed(1)} ${yAt(0).toFixed(1)} L ${xAt(0).toFixed(1)} ${yAt(0).toFixed(1)} Z`;
+      const hits = points.map((point, index) => {
+        const x = xAt(index);
+        const y = yAt(point.cfr);
+        const on = selectedMonth === index + 1;
+        const r = on ? 6.2 : 4;
+        return `<g class="safe-chart-hit${on ? " is-on" : ""}" data-safe-pick="1" data-safe-month="${index + 1}" data-safe-label="${esc(point.label)}" data-safe-cfr="${idDec(point.cfr, 2)}%" data-safe-md="${idNum(point.md)}" data-safe-laka="${idNum(point.laka)}">
+          <rect x="${(x - colW / 2).toFixed(1)}" y="${top}" width="${colW.toFixed(1)}" height="${plotH.toFixed(1)}" fill="${on ? "rgba(249,115,22,0.16)" : "transparent"}"/>
+          ${on ? `<line x1="${x.toFixed(1)}" y1="${top}" x2="${x.toFixed(1)}" y2="${(top + plotH).toFixed(1)}" stroke="#fb923c" stroke-dasharray="3 3" stroke-width="1"/>` : ""}
+          <circle class="safe-chart-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${on ? "#f97316" : "#38bdf8"}" stroke="#ffffff" stroke-width="1.4"/>
+        </g>`;
+      }).join("");
+      const names = points.map((point, index) => {
+        const on = selectedMonth === index + 1;
+        return `<text x="${xAt(index).toFixed(1)}" y="${height - 8}" text-anchor="middle" fill="${on ? "#fdba74" : "#ffffff"}" font-size="10" font-weight="${on ? "700" : "400"}">${esc(point.label)}</text>`;
+      }).join("");
+      host.innerHTML = `<svg viewBox="0 0 ${width} ${height}" class="h-auto w-full" role="img" aria-label="Trend CFR bulanan">${grid}<path d="${area}" fill="rgba(125,211,252,0.16)" pointer-events="none"/><path d="${line}" fill="none" stroke="#7dd3fc" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" pointer-events="none"/>${hits}${names}</svg>`;
     }
 
     function paintRateChart(host, groups, yMax, axisText, compact, ticks) {
@@ -272,12 +456,16 @@
         return `<line x1="${left}" y1="${y.toFixed(1)}" x2="${width - right}" y2="${y.toFixed(1)}" stroke="rgba(255,255,255,0.14)"/><text x="${left - 6}" y="${(y + 3).toFixed(1)}" text-anchor="end" fill="rgba(255,255,255,0.82)" font-size="10">${axisText(tick)}</text>`;
       }).join("");
       const line = bars.map((bar, index) => (index ? "L" : "M") + bar.cx.toFixed(1) + " " + bar.y.toFixed(1)).join(" ");
-      const dots = bars.map((bar) => `<circle cx="${bar.cx.toFixed(1)}" cy="${bar.y.toFixed(1)}" r="${compact ? 1.7 : 2.6}" fill="#ef4444" stroke="#fb923c" stroke-width="1"/>`).join("");
+      const dots = bars.map((bar) => `<circle cx="${bar.cx.toFixed(1)}" cy="${bar.y.toFixed(1)}" r="${compact ? 1.7 : 2.6}" fill="#ef4444" stroke="#fb923c" stroke-width="1" pointer-events="none"/>`).join("");
       const names = captions.map((caption) => `<text x="${caption.x.toFixed(1)}" y="${height - (groups[0].bars[0].foot ? 16 : 8)}" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700">${esc(caption.text)}</text>`).join("");
       const rects = bars.map((bar) => {
         const fill = bar.on ? "#4ade80" : "#15803d";
         const stroke = bar.on ? ' stroke="#ffffff" stroke-width="1.4"' : "";
-        return `<g><title>${esc(bar.tip)}</title><rect x="${bar.x.toFixed(1)}" y="${bar.y.toFixed(1)}" width="${bar.w.toFixed(1)}" height="${Math.max(bar.h, 1).toFixed(1)}" rx="1.5" fill="${fill}"${stroke}/></g>`;
+        const yearAttr = bar.year ? ` data-safe-year="${bar.year}"` : "";
+        return `<g class="safe-chart-hit${bar.on ? " is-on" : ""}" data-safe-pick="1"${yearAttr} data-safe-label="${esc(bar.tip || "")}">
+          <rect x="${bar.x.toFixed(1)}" y="${top}" width="${bar.w.toFixed(1)}" height="${plotH.toFixed(1)}" fill="${bar.on ? "rgba(255,255,255,0.06)" : "transparent"}"/>
+          <rect x="${bar.x.toFixed(1)}" y="${bar.y.toFixed(1)}" width="${bar.w.toFixed(1)}" height="${Math.max(bar.h, 1).toFixed(1)}" rx="1.5" fill="${fill}"${stroke}/>
+        </g>`;
       }).join("");
       const notes = bars.map((bar) => {
         let text = "";
@@ -286,7 +474,7 @@
         if (bar.foot) text += `<text x="${bar.cx.toFixed(1)}" y="${height - 6}" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="8">${esc(bar.foot)}</text>`;
         return text;
       }).join("");
-      host.innerHTML = `<svg viewBox="0 0 ${width} ${height}" class="h-auto w-full" role="img" aria-label="${esc(host.getAttribute("aria-label") || "Grafik fatalitas")}">${grid}${rects}<path d="${line}" fill="none" stroke="#fb923c" stroke-width="1.6"/>${dots}${notes}${names}</svg>`;
+      host.innerHTML = `<svg viewBox="0 0 ${width} ${height}" class="h-auto w-full" role="img" aria-label="${esc(host.getAttribute("aria-label") || "Grafik fatalitas")}">${grid}${rects}<path d="${line}" fill="none" stroke="#fb923c" stroke-width="1.6" pointer-events="none"/>${dots}${notes}${names}</svg>`;
     }
 
     function paintSafeDetail(scope) {
@@ -298,6 +486,7 @@
         label: String(row.year),
         bars: [{
           value: row.fi,
+          year: row.year,
           on: row.year === scope.year,
           inside: "FI: " + idDec(row.fi, 2) + "%",
           above: row.cut == null ? "" : idDec(row.cut, 2) + "%",
@@ -308,18 +497,10 @@
         label: String(row.year),
         bars: waveAround(row.fi / 100, 4, (row.year % 5) + 1.4).map((value, index) => ({
           value,
+          year: row.year,
           on: row.year === scope.year,
           foot: "K" + (index + 1),
           tip: row.year + " kuartal " + (index + 1) + " · FI " + idDec(value * 100, 2) + "%"
-        }))
-      }));
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-      const monthGroups = SAFE_YEAR_CFR.map((row) => ({
-        label: String(row.year),
-        bars: waveAround(row.fi / 100, 12, (row.year % 4) + 0.7).map((value, index) => ({
-          value,
-          on: row.year === scope.year,
-          tip: row.year + " " + monthNames[index] + " · FI " + idDec(value * 100, 2) + "%"
         }))
       }));
       const yearHost = document.getElementById("safeYearChart");
@@ -327,44 +508,58 @@
       const monthHost = document.getElementById("safeMonthChart");
       if (yearHost) yearHost.setAttribute("aria-label", "Tren tahunan " + tab.short);
       if (quarterHost) quarterHost.setAttribute("aria-label", "Tren kuartal " + tab.short);
-      if (monthHost) monthHost.setAttribute("aria-label", "Tren bulanan " + tab.short);
+      if (monthHost) monthHost.setAttribute("aria-label", "Trend CFR bulanan tahun " + scope.year);
       paintRateChart(yearHost, yearGroups, 30, (tick) => idDec(tick, 0) + "%", false, [0, 10, 20, 30]);
       paintRateChart(quarterHost, quarterGroups, 0.3, (tick) => idDec(tick, 2), false, [0, 0.1, 0.2, 0.3]);
-      paintRateChart(monthHost, monthGroups, 0.3, (tick) => idDec(tick, 2), true, [0, 0.1, 0.2, 0.3]);
+      const chartRows = SAFE_POLDA.filter((row) => scope.polda === "all" || row.provinces.includes(scope.polda));
+      const monthPoints = SAFE_MONTH_LABELS.map((label, index) => {
+        let md = 0;
+        let laka = 0;
+        chartRows.forEach((row) => {
+          const slice = safePoldaSlice(row, scope.year, index + 1);
+          md += slice.md;
+          laka += slice.laka;
+        });
+        return { label, md, laka, cfr: laka ? (md / laka) * 100 : 0 };
+      });
+      paintMonthCfrChart(monthHost, monthPoints, safeTableMonth(scope));
 
       const picked = SAFE_POLDA.find((row) => row.provinces.includes(scope.polda));
       const yearRow = SAFE_YEAR_CFR.find((row) => row.year === scope.year) || SAFE_YEAR_CFR[SAFE_YEAR_CFR.length - 1];
       const advice = picked ? (picked.md / picked.laka) * 100 : yearRow.fi;
       document.getElementById("safeAdviceValue").textContent = idDec(advice, 2) + "%";
-      document.getElementById("safeTableTitle").textContent = tab.short;
+      const monthNo = safeTableMonth(scope);
+      const monthName = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][monthNo];
+      document.getElementById("safeTableTitle").textContent = "Tabel Kinerja Keselamatan " + monthName + " " + scope.year;
       const level = roleLevel(session);
       const place = level === "kota"
         ? "Polres " + session.kota
         : level === "provinsi"
           ? (session.jabatan || "Polda")
-          : (scope.polda === "all" ? "Polda" : document.getElementById("safePolda").selectedOptions[0].textContent.replace(/^Polda /, ""));
-      document.getElementById("safeTableScope").textContent = level === "nasional"
-        ? "per " + place + " vs Proyeksi Tanpa Intervensi RUNK Nasional"
-        : place + " · data di luar cakupan peran ini tidak ditampilkan";
+          : "Aceh sampai Papua";
+      document.getElementById("safeTableScope").textContent = "CFR = MD / Laka · MR per 100.000 penduduk (BPS) · " + place + " · perubahan vs bulan lalu";
 
-      const scale = scope.yearFactor * scope.monthFactor;
-      let ranked = SAFE_POLDA
-        .map((row) => ({ ...row, cfr: row.md / row.laka }))
-        .sort((a, b) => a.cfr - b.cfr || a.name.localeCompare(b.name, "id"));
-      if (level === "provinsi" && session) ranked = ranked.filter((row) => row.provinces.includes(session.polda || poldaKey(session.provinsi)));
-      if (level === "kota" && session) {
-        const parent = SAFE_POLDA.find((row) => row.provinces.includes(session.polda || poldaKey(session.provinsi))) || SAFE_POLDA[0];
-        ranked = [{ name: "Polres " + session.kota, md: parent.md * 0.34, laka: parent.laka * 0.34, cfr: parent.md / parent.laka, provinces: [session.kota] }];
-      }
+      const prev = safePrevMonth(scope.year, monthNo);
+      const rows = SAFE_POLDA.map((row) => {
+        const now = safeRates(safePoldaSlice(row, scope.year, monthNo).md, safePoldaSlice(row, scope.year, monthNo).laka, row.people);
+        const before = safeRates(safePoldaSlice(row, prev.year, prev.month).md, safePoldaSlice(row, prev.year, prev.month).laka, row.people);
+        return {
+          ...row,
+          cfr: now.cfr,
+          mr: now.mr,
+          cfrChange: safeChangeLabel(now.cfr, before.cfr),
+          mrChange: safeChangeLabel(now.mr, before.mr)
+        };
+      });
       const body = document.getElementById("safePoldaBody");
-      body.innerHTML = ranked.map((row, index) => {
-        const on = level === "kota" || row.provinces.includes(scope.polda);
+      body.innerHTML = rows.map((row) => {
+        const on = row.provinces.includes(scope.polda);
         return `<tr data-hit="${on ? "1" : "0"}" class="border-b border-slate-100 ${on ? "bg-sky-100 font-semibold text-slate-900" : "text-slate-700"}">
           <td class="px-3 py-1.5">${esc(row.name)}</td>
-          <td class="px-2 py-1.5 text-right tabular-nums">${idNum(row.md * scale)}</td>
-          <td class="px-2 py-1.5 text-right tabular-nums">${idNum(row.laka * scale)}</td>
-          <td class="px-2 py-1.5 text-right tabular-nums">${index + 1}</td>
-          <td class="px-3 py-1.5 text-right tabular-nums">${idDec(row.cfr, 2)}</td>
+          <td class="px-2 py-1.5 text-right tabular-nums">${idDec(row.cfr, 1)}%</td>
+          <td class="px-2 py-1.5 text-right">${safeChangeMarkup(row.cfrChange)}</td>
+          <td class="px-2 py-1.5 text-right tabular-nums">${idDec(row.mr, 2)}</td>
+          <td class="px-3 py-1.5 text-right">${safeChangeMarkup(row.mrChange)}</td>
         </tr>`;
       }).join("");
       const hit = body.querySelector("[data-hit='1']");
@@ -559,6 +754,7 @@
         loadSafeGeo().then(() => {
           if (activeView === "viewKeselamatan") renderSafeMap();
         });
+        paintSafePanel();
         return;
       }
       const width = Math.max(svg.clientWidth, 320);
@@ -754,6 +950,9 @@
     document.getElementById("safeFilters").addEventListener("change", (event) => {
       if (event.target.id === "safePolda") fillSafePolres();
       renderSafeMap();
+    });
+    ["safeTrend", "safeYearChart", "safeQuarterChart", "safeMonthChart"].forEach((id) => {
+      bindSafeChartHost(document.getElementById(id));
     });
     document.getElementById("safeMap").addEventListener("click", (event) => {
       if (safeDragged) {
