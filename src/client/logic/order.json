@@ -8,5 +8,7 @@
   "07-chrome.js",
   "08-safety.js",
   "09-session.js",
-  "10-master.js"
+  "10-master.js",
+  "11-alesha-chat.js",
+  "12-alesha-kiosk.js"
 ]

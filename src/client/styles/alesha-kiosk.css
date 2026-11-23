@@ -1,0 +1,2 @@
+#aiKioskModal:not([hidden]) { display: flex; }
+#aiKioskDialog.is-full { width: 98vw; height: 96vh; max-width: none; max-height: none; }

@@ -223,14 +223,6 @@
       vertical-align: 0.05rem;
     }
     #sidebar ul ul button[data-leaf].bg-brand-blue::before { background: #fff; }
-    #aiChatModal:not([hidden]),
-    #aiKioskModal:not([hidden]) { display: flex; }
-    #aiChatDialog.is-full,
-    #aiKioskDialog.is-full { width: 98vw; height: 96vh; max-width: none; max-height: none; }
-    #aleshaRoot:hover #aiTip { opacity: 1; }
-    #aleshaRoot.is-open #aiTip { display: none; }
-    #aiFeed .ai-copy { opacity: 0; }
-    #aiFeed article:hover .ai-copy { opacity: 1; }
     .grant-scroll { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
     .grant-table { border-collapse: separate; border-spacing: 0; }
     .grant-table thead th {
