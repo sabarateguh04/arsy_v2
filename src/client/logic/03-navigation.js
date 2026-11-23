@@ -241,6 +241,7 @@
         }, 200);
       }
 
+      if (viewId !== "viewKeselamatan") setSafeTableFull(false);
       if (viewId === "viewKeamanan") mountChart("keamanan", "chartKeamanan", keamananConfig);
       if (viewId === "viewKeselamatan") renderSafeMap();
       if (viewId === "viewKetertiban") mountChart("ketertiban", "chartKetertiban", ketertibanConfig);

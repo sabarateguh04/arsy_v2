@@ -1022,6 +1022,20 @@
       safeView.k = 1;
       applySafeView();
     });
+    function setSafeTableFull(on) {
+      const card = document.getElementById("safeTableCard");
+      const button = document.getElementById("safeTableFull");
+      const scrim = document.getElementById("safeTableScrim");
+      if (!card || !button) return;
+      card.classList.toggle("is-table-full", on);
+      if (scrim) scrim.classList.toggle("hidden-section", !on);
+      button.setAttribute("aria-pressed", on ? "true" : "false");
+      button.setAttribute("aria-label", on ? "Kembalikan ukuran tabel" : "Perbesar tabel");
+      button.setAttribute("title", on ? "Kembalikan ukuran tabel" : "Perbesar tabel");
+      const icon = button.querySelector("i");
+      if (icon) icon.className = on ? "fa-solid fa-compress text-sm" : "fa-solid fa-expand text-sm";
+    }
+
     function setSafeFull(on) {
       const view = document.getElementById("viewKeselamatan");
       view.classList.toggle("is-full", on);
@@ -1036,6 +1050,10 @@
     document.getElementById("safeFull").addEventListener("click", () => {
       setSafeFull(!document.getElementById("viewKeselamatan").classList.contains("is-full"));
     });
+    document.getElementById("safeTableFull").addEventListener("click", () => {
+      setSafeTableFull(!document.getElementById("safeTableCard").classList.contains("is-table-full"));
+    });
+    document.getElementById("safeTableScrim").addEventListener("click", () => setSafeTableFull(false));
     document.getElementById("safePdf").addEventListener("click", () => window.print());
     function loadHtml2Canvas() {
       if (window.html2canvas) return Promise.resolve(window.html2canvas);
@@ -1130,6 +1148,10 @@
       const clone = view.cloneNode(true);
       clone.id = "safeCaptureSheet";
       clone.classList.remove("is-full", "hidden-section");
+      const cloneTable = clone.querySelector("#safeTableCard");
+      if (cloneTable) cloneTable.classList.remove("is-table-full");
+      const cloneScrim = clone.querySelector("#safeTableScrim");
+      if (cloneScrim) cloneScrim.remove();
       const cloneToolbar = clone.querySelector("#safeToolbar");
       if (cloneToolbar) cloneToolbar.remove();
       clone.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));

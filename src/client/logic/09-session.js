@@ -25,6 +25,7 @@ accountBtn.addEventListener("click", (event) => {
 document.querySelectorAll("[data-account]").forEach((button) => {
   button.addEventListener("click", () => {
     if (document.getElementById("viewKeselamatan").classList.contains("is-full")) setSafeFull(false);
+    if (document.getElementById("safeTableCard") && document.getElementById("safeTableCard").classList.contains("is-table-full")) setSafeTableFull(false);
     openLeaf(button.dataset.account);
     setAccountMenu(false);
   });
@@ -290,6 +291,10 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
+  if (document.getElementById("safeTableCard") && document.getElementById("safeTableCard").classList.contains("is-table-full")) {
+    setSafeTableFull(false);
+    return;
+  }
   if (document.getElementById("viewKeselamatan").classList.contains("is-full")) {
     setSafeFull(false);
     return;

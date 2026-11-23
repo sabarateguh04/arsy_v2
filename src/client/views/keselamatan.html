@@ -212,10 +212,15 @@
                   <li>Sinergi razia terpadu dengan Dishub dan Satpol PP.</li>
                 </ul>
               </article>
-              <article class="flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg lg:col-start-2 lg:row-span-2 lg:row-start-2 lg:h-0 lg:min-h-full lg:self-stretch">
-                <div class="px-4 pb-2 pt-4">
-                  <h3 id="safeTableTitle" class="text-sm font-bold text-slate-900">Tabel Kinerja Keselamatan Bulan ini</h3>
-                  <p id="safeTableScope" class="text-[11px] leading-snug text-slate-500">CFR = MD / Laka · MR per 100.000 penduduk (BPS) · perubahan vs bulan lalu</p>
+              <article id="safeTableCard" class="flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg lg:col-start-2 lg:row-span-2 lg:row-start-2 lg:h-0 lg:min-h-full lg:self-stretch">
+                <div class="flex items-start gap-3 px-4 pb-2 pt-4">
+                  <div class="min-w-0 flex-1">
+                    <h3 id="safeTableTitle" class="text-sm font-bold text-slate-900">Tabel Kinerja Keselamatan Bulan ini</h3>
+                    <p id="safeTableScope" class="text-[11px] leading-snug text-slate-500">CFR = MD / Laka · MR per 100.000 penduduk (BPS) · perubahan vs bulan lalu</p>
+                  </div>
+                  <button type="button" id="safeTableFull" class="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-brand-blue" aria-pressed="false" aria-label="Perbesar tabel" title="Perbesar tabel">
+                    <i class="fa-solid fa-expand text-sm"></i>
+                  </button>
                 </div>
                 <div id="safePoldaScroll" class="min-h-0 flex-1 overflow-auto">
                   <table class="w-full text-left text-[11px]">
@@ -232,6 +237,7 @@
                   </table>
                 </div>
               </article>
+              <div id="safeTableScrim" class="hidden-section fixed inset-0 z-[84] bg-slate-900/45"></div>
             </div>
             <footer class="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-t border-slate-300 pt-4 text-xs text-slate-600">
               <span><i class="fa-regular fa-envelope mr-1.5"></i>Email : support@algoritma.or.id</span>

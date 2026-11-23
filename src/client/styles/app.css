@@ -74,6 +74,36 @@
   inset: 0;
   z-index: 80;
 }
+#safeTableCard.is-table-full {
+  position: fixed;
+  inset: 1.25rem;
+  z-index: 85;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  border-radius: 1rem;
+  box-shadow: 0 24px 70px rgba(7, 20, 51, 0.28);
+}
+#safeTableCard.is-table-full #safeTableTitle {
+  font-size: 1.125rem;
+}
+#safeTableCard.is-table-full #safeTableScope {
+  font-size: 0.8125rem;
+}
+#safeTableCard.is-table-full table,
+#safeTableCard.is-table-full thead {
+  font-size: 14px;
+}
+#safeTableCard.is-table-full th,
+#safeTableCard.is-table-full td {
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+@media (max-width: 640px) {
+  #safeTableCard.is-table-full {
+    inset: 0.5rem;
+  }
+}
 #safeToolbar {
   display: flex;
   align-items: center;
