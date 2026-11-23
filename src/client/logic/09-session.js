@@ -221,10 +221,10 @@ document.addEventListener("click", (event) => {
 });
 
 const ALESHA_PROMPTS = [
-  { label: "📊 Rekapitulasi Traffic Counting", prompt: "Tampilkan rekapitulasi data traffic counting, volume kendaraan, dan titik pantau aktif hari ini." },
-  { label: "🚨 Status Posko Operasi & Pengamanan", prompt: "Bagaimana status posko operasi (Pos Pam, Pos Yan, Pos Terpadu) yang aktif serta kehadiran personel lapangan saat ini?" },
-  { label: "📹 Pantauan CCTV & Titik Rawan Laka", prompt: "Tampilkan pantauan live streaming CCTV operasional dan daftar titik rawan kemacetan / kecelakaan terkini." },
-  { label: "👮 Laporan Giat Turjagwali Personel", prompt: "Berikan ringkasan kegiatan Turjagwali (Pengaturan, Penjagaan, Pengawalan, dan Patroli) personel lapangan saat ini." }
+  { label: "📊 Rekap Data Master ARSY", prompt: "Berapa jumlah pengguna, peran, jabatan, provinsi, kota, dan menu di ARSY?" },
+  { label: "🎖️ Daftar Peran dan Jabatan", prompt: "Sebutkan daftar peran dan jabatan yang ada di ARSY." },
+  { label: "🗺️ Wilayah Sesuai Cakupan", prompt: "Tampilkan daftar provinsi dan kota sesuai cakupan wilayah saya." },
+  { label: "🔐 Menu Hak Akses Peran", prompt: "Menu apa saja yang boleh dibuka peran saya?" }
 ];
 const aleshaUi = {
   busy: false,
@@ -331,7 +331,7 @@ function renderAleshaFeed() {
   const info = aleshaScope();
   if (!messages.length && !aleshaUi.busy) {
     const cards = ALESHA_PROMPTS.map((item, index) => `<button type="button" data-ai-prompt="${index}" class="flex w-full min-w-0 items-center gap-3 rounded-xl border border-slate-200 p-3 text-left text-xs text-slate-700 shadow-sm hover:border-blue-300 hover:bg-blue-50/50"><span class="min-w-0 flex-1"><span class="block text-xs font-bold text-slate-900">${esc(item.label)}</span><span class="mt-0.5 block text-[11px] leading-relaxed text-slate-500">${esc(item.prompt)}</span></span><i class="fa-solid fa-chevron-right shrink-0 text-slate-400"></i></button>`).join("");
-    feed.innerHTML = `<div class="mx-auto flex min-h-full w-full max-w-2xl flex-col items-center justify-center px-1 py-6 text-center"><span class="mb-3.5 grid h-16 w-16 place-items-center rounded-2xl border border-blue-200 bg-blue-50 text-blue-600"><i class="fa-solid fa-robot text-2xl"></i></span><h3 class="text-base font-bold text-slate-900">Selamat Datang, ${esc((session && session.name) || "Petugas")}</h3><p class="mt-1 max-w-md text-xs leading-relaxed text-slate-600">Alesha siap menyajikan data operasional lalu lintas, traffic counting, pemantauan posko pengamanan, status CCTV, dan personel lapangan wilayah <strong>${esc(info.scope)}</strong> dalam wewenang <strong>${esc(info.role)}</strong>.</p><div class="mt-6 w-full space-y-2 text-left"><p class="mb-2.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-400">Pilih Pertanyaan Cepat Berdasarkan Menu:</p>${cards}</div></div>`;
+    feed.innerHTML = `<div class="mx-auto flex min-h-full w-full max-w-2xl flex-col items-center justify-center px-1 py-6 text-center"><span class="mb-3.5 grid h-16 w-16 place-items-center rounded-2xl border border-blue-200 bg-blue-50 text-blue-600"><i class="fa-solid fa-robot text-2xl"></i></span><h3 class="text-base font-bold text-slate-900">Selamat Datang, ${esc((session && session.name) || "Petugas")}</h3><p class="mt-1 max-w-md text-xs leading-relaxed text-slate-600">Alesha siap menyajikan data master ARSY: pengguna, peran, jabatan, provinsi, kota, dan hak akses menu wilayah <strong>${esc(info.scope)}</strong> dalam wewenang <strong>${esc(info.role)}</strong>.</p><div class="mt-6 w-full space-y-2 text-left"><p class="mb-2.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-400">Pilih Pertanyaan Cepat Berdasarkan Menu:</p>${cards}</div></div>`;
   } else {
     feed.innerHTML = messages.map((item) => {
       const mine = item.role === "user";
