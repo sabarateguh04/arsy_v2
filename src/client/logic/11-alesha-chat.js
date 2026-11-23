@@ -21,7 +21,8 @@ const aleshaUi = {
   charts: [],
   chartBank: [],
   chartModes: {},
-  mermaidBank: []
+  mermaidBank: [],
+  renderSeq: 0
 };
 
 function aleshaKey() {
@@ -250,11 +251,11 @@ function aleshaChartPlot(spec, mode) {
   }
   if (mode === "line" || mode === "dual-line" || mode === "combo") {
     const width = 640;
-    const height = 240;
+    const height = 260;
     const left = 36;
     const right = 16;
     const top = 16;
-    const bottom = 28;
+    const bottom = 36;
     const innerW = width - left - right;
     const innerH = height - top - bottom;
     const point = (value, index) => ({
@@ -263,14 +264,14 @@ function aleshaChartPlot(spec, mode) {
     });
     const primary = rows.map((row, index) => point(row.value, index));
     const secondary = rows.map((row, index) => point(row.secondary, index));
-    const labels = rows.map((row, index) => `<text x="${primary[index].x}" y="${height - 8}" text-anchor="middle" font-size="10" fill="#475569">${esc(row.name).slice(0, 16)}</text>`).join("");
+    const labels = rows.map((row, index) => `<text x="${primary[index].x}" y="${height - 10}" text-anchor="middle" font-size="10.5" font-weight="600" fill="#475569">${esc(row.name).slice(0, 16)}</text>`).join("");
     const bars = mode === "combo" ? rows.map((row, index) => {
       const barWidth = Math.min(36, innerW / rows.length * 0.45);
       const barHeight = (row.value / max) * innerH;
       return `<rect x="${primary[index].x - barWidth / 2}" y="${top + innerH - barHeight}" width="${barWidth}" height="${barHeight}" rx="6" fill="${row.color}"></rect>`;
     }).join("") : "";
     const second = mode === "line" ? "" : `<path d="${aleshaLinePath(secondary)}" fill="none" stroke="#f59e0b" stroke-width="2.5"></path>`;
-    return `<svg viewBox="0 0 ${width} ${height}" class="h-56 w-full">${bars}<path d="${aleshaLinePath(primary)}" fill="none" stroke="#2563eb" stroke-width="2.5"></path>${second}${primary.map((item, index) => `<circle cx="${item.x}" cy="${item.y}" r="3.5" fill="${rows[index].color}"></circle>`).join("")}${labels}</svg>`;
+    return `<svg viewBox="0 0 ${width} ${height}" class="h-64 w-full">${bars}<path d="${aleshaLinePath(primary)}" fill="none" stroke="#2563eb" stroke-width="2.5"></path>${second}${primary.map((item, index) => `<circle cx="${item.x}" cy="${item.y}" r="3.5" fill="${rows[index].color}"></circle>`).join("")}${labels}</svg>`;
   }
   const columns = rows.map((row, index) => {
     const share = total > 0 ? Math.round((row.value / total) * 100) : 0;
@@ -278,9 +279,9 @@ function aleshaChartPlot(spec, mode) {
     const previous = index > 0 ? rows[index - 1].value : row.value;
     const delta = previous ? Math.round(((row.value - previous) / previous) * 100) : 0;
     const badge = index === 0 ? "" : `<span class="mb-0.5 rounded-full border px-1.5 text-[9px] font-black ${delta >= 0 ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"}">${delta >= 0 ? "▲" : "▼"} ${Math.abs(delta)}%</span>`;
-    return `<div class="flex h-full min-w-0 flex-1 flex-col items-center justify-end" style="max-width:${rows.length <= 4 ? "96px" : "64px"}"><div class="mb-1.5 flex flex-col items-center">${badge}<span class="rounded-md border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-black text-slate-900">${aleshaNum(row.value)}</span><span class="text-[10px] font-bold text-slate-500">${share}%</span></div><div class="flex w-full items-end justify-center" style="height:70%"><div class="w-full max-w-[48px] rounded-t-xl" style="height:${height}%;background:linear-gradient(180deg, ${row.color} 0%, ${row.color}d9 100%)"></div></div><p class="mt-2 line-clamp-2 text-center text-[11px] font-semibold text-slate-700" title="${esc(row.name)}">${esc(row.name)}</p></div>`;
+    return `<div class="flex h-full min-w-0 flex-1 flex-col items-center" style="max-width:${rows.length <= 4 ? "96px" : rows.length <= 6 ? "76px" : "68px"}"><div class="mb-2 flex shrink-0 flex-col items-center">${badge}<span class="rounded-md border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-black text-slate-900 shadow-xs">${aleshaNum(row.value)}</span><span class="text-[10px] font-bold text-slate-500">${share}%</span></div><div class="flex min-h-[48px] w-full flex-1 items-end justify-center"><div class="w-full max-w-[44px] rounded-t-xl transition-all" style="height:${height}%;background:linear-gradient(180deg, ${row.color} 0%, ${row.color}d9 100%)"></div></div><div class="mt-2.5 flex h-10 w-full shrink-0 items-start justify-center px-0.5"><p class="line-clamp-2 text-center text-[10.5px] font-semibold leading-tight text-slate-700" title="${esc(row.name)}">${esc(row.name)}</p></div></div>`;
   }).join("");
-  return `<div class="space-y-3"><div class="flex items-center justify-between border-b border-slate-200/70 px-1 pb-2 text-xs"><span class="font-medium text-slate-600">Total Data: <strong class="text-slate-900">${aleshaNum(total)}</strong></span><span class="text-[11px] text-slate-500">${rows.length} Kategori Analisis</span></div><div class="flex h-56 items-end justify-around gap-2 rounded-xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white px-3 pb-2 pt-3">${columns}</div></div>`;
+  return `<div class="space-y-3"><div class="flex items-center justify-between border-b border-slate-200/70 px-1 pb-2 text-xs"><span class="font-medium text-slate-600">Total Data: <strong class="text-slate-900">${aleshaNum(total)}</strong></span><span class="text-[11px] text-slate-500">${rows.length} Kategori Analisis</span></div><div class="flex min-h-[280px] items-stretch justify-around gap-2 rounded-xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white px-3 pb-3 pt-3.5">${columns}</div></div>`;
 }
 
 function aleshaChartCard(index, spec) {
@@ -511,10 +512,15 @@ function aleshaDiagramZoom(card, direction) {
   if (label) label.textContent = Math.round(next * 100) + "%";
 }
 
-function hydrateAleshaVisuals(root) {
+function hydrateAleshaVisuals(root, onVisualReady) {
   const scope = root || document.getElementById("aiFeed");
   if (!scope) return;
   paintAleshaCharts(scope);
+  if (onVisualReady) {
+    scope.querySelectorAll("img").forEach((img) => {
+      if (!img.complete) img.addEventListener("load", onVisualReady, { once: true });
+    });
+  }
   const diagrams = [...scope.querySelectorAll("[data-ai-mermaid]")];
   if (!diagrams.length) return;
   import("mermaid").then((mod) => {
@@ -540,8 +546,10 @@ function hydrateAleshaVisuals(root) {
       const code = aleshaUi.mermaidBank[Number(node.dataset.aiMermaid)];
       mermaid.render("aiMermaid" + Date.now() + index, code).then((drawn) => {
         node.innerHTML = drawn.svg;
+        if (onVisualReady) onVisualReady();
       }).catch(() => {
         node.innerHTML = `<pre class="overflow-x-auto text-[11px] text-slate-700">${esc(code)}</pre>`;
+        if (onVisualReady) onVisualReady();
       });
     });
   }).catch(() => {
@@ -549,6 +557,7 @@ function hydrateAleshaVisuals(root) {
       const code = aleshaUi.mermaidBank[Number(node.dataset.aiMermaid)] || "";
       node.innerHTML = `<pre class="overflow-x-auto text-[11px] text-slate-700">${esc(code)}</pre>`;
     });
+    if (onVisualReady) onVisualReady();
   });
 }
 
@@ -655,8 +664,28 @@ async function exportAleshaPdf(node) {
   pdf.save("laporan_arsy_" + Date.now() + ".pdf");
 }
 
-function renderAleshaFeed() {
+function scrollAleshaFeed(smooth) {
   const feed = document.getElementById("aiFeed");
+  if (!feed) return;
+  if (smooth && typeof feed.scrollTo === "function") {
+    requestAnimationFrame(() => {
+      feed.scrollTo({ top: feed.scrollHeight, behavior: "smooth" });
+    });
+    return;
+  }
+  feed.scrollTop = feed.scrollHeight;
+  requestAnimationFrame(() => {
+    feed.scrollTop = feed.scrollHeight;
+  });
+}
+
+function renderAleshaFeed(options) {
+  const feed = document.getElementById("aiFeed");
+  if (!feed) return;
+  const scrollMode = (options && options.scroll) || "instant";
+  const prevScroll = feed.scrollTop;
+  aleshaUi.renderSeq += 1;
+  const seq = aleshaUi.renderSeq;
   aleshaUi.chartBank = [];
   aleshaUi.mermaidBank = [];
   const current = activeAleshaSession();
@@ -680,8 +709,23 @@ function renderAleshaFeed() {
     notice.className = "mx-4 mt-3 hidden";
     notice.innerHTML = "";
   }
-  if (messages.length || aleshaUi.busy) feed.scrollTop = feed.scrollHeight;
-  hydrateAleshaVisuals();
+  const shouldScrollBottom = Boolean(messages.length || aleshaUi.busy) && scrollMode !== "keep";
+  hydrateAleshaVisuals(feed, shouldScrollBottom ? () => {
+    if (seq === aleshaUi.renderSeq) scrollAleshaFeed(scrollMode === "smooth");
+  } : null);
+  if (scrollMode === "keep") {
+    feed.scrollTop = prevScroll;
+    requestAnimationFrame(() => {
+      if (seq === aleshaUi.renderSeq) feed.scrollTop = prevScroll;
+    });
+  } else if (shouldScrollBottom) {
+    if (scrollMode === "smooth") {
+      feed.scrollTop = Math.min(prevScroll, feed.scrollHeight);
+      scrollAleshaFeed(true);
+    } else {
+      scrollAleshaFeed(false);
+    }
+  }
 }
 
 function renderAleshaExtras() {
@@ -740,7 +784,7 @@ async function sendAlesha(custom) {
   if (!textMessage && !aleshaUi.files.length && !aleshaUi.voice) return;
   if (!session) {
     aleshaUi.notice = "Masuk dulu untuk berbicara dengan Alesha.";
-    renderAleshaFeed();
+    renderAleshaFeed({ scroll: "keep" });
     return;
   }
   let display = textMessage;
@@ -764,8 +808,8 @@ async function sendAlesha(custom) {
   aleshaUi.busy = true;
   saveAleshaStore();
   renderAleshaSessions();
-  renderAleshaFeed();
   renderAleshaExtras();
+  renderAleshaFeed({ scroll: "smooth" });
   try {
     const response = await fetch("/api/ai-chat/send", {
       method: "POST",
@@ -788,7 +832,7 @@ async function sendAlesha(custom) {
     aleshaUi.busy = false;
     saveAleshaStore();
     renderAleshaSessions();
-    renderAleshaFeed();
+    renderAleshaFeed({ scroll: "smooth" });
   }
 }
 
@@ -799,8 +843,8 @@ function setAleshaChat(open) {
   loadAleshaStore();
   paintAleshaIdentity();
   renderAleshaSessions();
-  renderAleshaFeed();
   renderAleshaExtras();
+  renderAleshaFeed({ scroll: "instant" });
   document.getElementById("aiInput").focus();
 }
 function readAleshaFiles(fileList) {
@@ -813,7 +857,7 @@ function readAleshaFiles(fileList) {
     reader.onload = () => {
       aleshaUi.files.push({ name: file.name, size: file.size, type: file.type || "", base64: String(reader.result || "") });
       renderAleshaExtras();
-      renderAleshaFeed();
+      renderAleshaFeed({ scroll: "keep" });
     };
     reader.readAsDataURL(file);
   });
@@ -848,7 +892,7 @@ async function startAleshaRecording() {
     renderAleshaExtras();
   } catch (error) {
     aleshaUi.notice = "Izin mikrofon diperlukan untuk merekam pesan suara.";
-    renderAleshaFeed();
+    renderAleshaFeed({ scroll: "keep" });
   }
 }
 
@@ -1040,16 +1084,16 @@ document.getElementById("aiFeed").addEventListener("click", (event) => {
   if (!message) return;
   navigator.clipboard.writeText(message.content);
   aleshaUi.copiedId = message.id;
-  renderAleshaFeed();
+  renderAleshaFeed({ scroll: "keep" });
   setTimeout(() => {
     aleshaUi.copiedId = "";
-    renderAleshaFeed();
+    renderAleshaFeed({ scroll: "keep" });
   }, 2000);
 });
 document.getElementById("aiNotice").addEventListener("click", (event) => {
   if (event.target.id === "aiNoticeClose") {
     aleshaUi.notice = "";
-    renderAleshaFeed();
+    renderAleshaFeed({ scroll: "keep" });
   }
 });
 document.getElementById("aiAttach").addEventListener("click", () => document.getElementById("aiFileInput").click());
