@@ -210,6 +210,52 @@ function aleshaNum(value) {
   return Number(value || 0).toLocaleString("id-ID");
 }
 
+function aleshaFmt(value) {
+  const num = Number(value || 0);
+  if (Number.isInteger(num)) return num.toLocaleString("id-ID");
+  return num.toLocaleString("id-ID", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
+function aleshaNiceScale(max) {
+  const raw = Math.max(Number(max) || 0, 1);
+  if (raw <= 4) return { top: 4, step: 1 };
+  if (raw <= 20) {
+    const step = Math.ceil(raw / 4);
+    return { top: step * 4, step };
+  }
+  const rough = raw / 4;
+  const pow = Math.pow(10, Math.floor(Math.log10(rough)));
+  const norm = rough / pow;
+  const mult = norm <= 1 ? 1 : (pow >= 10 && norm <= 1.5) ? 1.5 : norm <= 2 ? 2 : (pow >= 10 && norm <= 2.5) ? 2.5 : norm <= 5 ? 5 : 10;
+  const step = mult * pow;
+  return { top: Math.max(Math.ceil(raw / step) * step, step * 4), step };
+}
+
+function aleshaWrapLabel(text, maxChars) {
+  const clean = String(text || "").trim();
+  if (clean.length <= maxChars) return [clean];
+  const words = clean.split(/\s+/);
+  if (words.length === 1) return [clean.slice(0, maxChars - 1) + "…"];
+  let line1 = "";
+  let index = 0;
+  while (index < words.length) {
+    const next = line1 ? line1 + " " + words[index] : words[index];
+    if (next.length > maxChars && line1) break;
+    line1 = next;
+    index += 1;
+  }
+  const rest = words.slice(index).join(" ");
+  if (!rest) return [line1.slice(0, maxChars)];
+  return [line1, rest.length > maxChars ? rest.slice(0, maxChars - 1) + "…" : rest];
+}
+
+function aleshaSvgPill(x, y, label, fill, stroke, textColor) {
+  const text = String(label);
+  const pillW = Math.max(24, text.length * 6.8 + 12);
+  const pillH = 18;
+  return `<g><rect x="${(x - pillW / 2).toFixed(1)}" y="${(y - pillH / 2).toFixed(1)}" width="${pillW.toFixed(1)}" height="${pillH}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1"></rect><text x="${x.toFixed(1)}" y="${(y + 3.5).toFixed(1)}" text-anchor="middle" font-size="10.5" font-weight="800" fill="${textColor}">${esc(text)}</text></g>`;
+}
+
 function aleshaLinePath(points) {
   if (!points.length) return "";
   if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
@@ -232,46 +278,102 @@ function aleshaChartPlot(spec, mode) {
   const rows = aleshaRows(spec);
   if (!rows.length) return `<div class="py-8 text-center text-xs text-slate-400">Tidak ada data untuk ditampilkan.</div>`;
   const total = rows.reduce((sum, row) => sum + row.value, 0);
-  const max = Math.max(...rows.map((row) => Math.max(row.value, row.secondary)), 1);
+  const avg = rows.length ? total / rows.length : 0;
+  const hasSecondary = rows.some((row) => row.secondary > 0);
+  const secondValues = hasSecondary
+    ? rows.map((row) => row.secondary)
+    : rows.map((row, index) => {
+        const running = rows.slice(0, index + 1).reduce((sum, item) => sum + item.value, 0) / (index + 1);
+        return Math.round(running * 10) / 10;
+      });
+  const secondLabel = hasSecondary ? "Target / Pembanding" : "Rata-rata Berjalan";
+  const max = Math.max(...rows.map((row, index) => Math.max(row.value, mode === "line" || mode === "bar" || mode === "pie" ? 0 : secondValues[index])), 1);
   if (mode === "pie") {
     let angle = -Math.PI / 2;
     const slices = rows.map((row) => {
       const sweep = total > 0 ? (row.value / total) * Math.PI * 2 : 0;
       const end = angle + sweep;
       const large = sweep > Math.PI ? 1 : 0;
-      const x1 = 110 + 78 * Math.cos(angle);
-      const y1 = 110 + 78 * Math.sin(angle);
-      const x2 = 110 + 78 * Math.cos(end);
-      const y2 = 110 + 78 * Math.sin(end);
+      const x1 = 110 + 82 * Math.cos(angle);
+      const y1 = 110 + 82 * Math.sin(angle);
+      const x2 = 110 + 82 * Math.cos(end);
+      const y2 = 110 + 82 * Math.sin(end);
       angle = end;
-      return `<path d="M 110 110 L ${x1.toFixed(1)} ${y1.toFixed(1)} A 78 78 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${row.color}"></path>`;
+      return `<path d="M 110 110 L ${x1.toFixed(1)} ${y1.toFixed(1)} A 82 82 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${row.color}" stroke="#ffffff" stroke-width="1.5"></path>`;
     }).join("");
-    const legend = rows.map((row) => `<li class="flex items-center justify-between gap-3"><span class="flex min-w-0 items-center gap-1.5"><span class="h-2 w-2 shrink-0 rounded-full" style="background:${row.color}"></span><span class="truncate">${esc(row.name)}</span></span><span class="font-bold">${aleshaNum(row.value)}</span></li>`).join("");
-    return `<div class="flex flex-wrap items-center justify-center gap-4"><svg viewBox="0 0 220 220" class="h-52 w-52">${slices}<circle cx="110" cy="110" r="42" fill="#ffffff"></circle></svg><ul class="min-w-[10rem] space-y-1 text-[11px] text-slate-700">${legend}</ul></div>`;
+    const legend = rows.map((row) => {
+      const share = total > 0 ? Math.round((row.value / total) * 100) : 0;
+      return `<li class="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-white px-2.5 py-1.5 shadow-xs"><span class="flex min-w-0 items-center gap-2"><span class="h-2.5 w-2.5 shrink-0 rounded-full" style="background:${row.color}"></span><span class="truncate font-medium text-slate-700">${esc(row.name)}</span></span><span class="shrink-0 font-extrabold text-slate-900">${aleshaNum(row.value)} <span class="font-semibold text-slate-400">(${share}%)</span></span></li>`;
+    }).join("");
+    return `<div class="space-y-3"><div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/70 px-1 pb-2 text-xs"><span class="font-medium text-slate-600">Total Data: <strong class="text-slate-900">${aleshaNum(total)}</strong></span><span class="text-[11px] text-slate-500">${rows.length} Kategori Analisis</span></div><div class="flex flex-wrap items-center justify-center gap-5 rounded-xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4"><svg viewBox="0 0 220 220" class="h-52 w-52 shrink-0">${slices}<circle cx="110" cy="110" r="46" fill="#ffffff"></circle><text x="110" y="105" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">TOTAL</text><text x="110" y="124" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">${aleshaNum(total)}</text></svg><ul class="min-w-[13rem] flex-1 space-y-1.5 text-[11px] text-slate-700">${legend}</ul></div></div>`;
   }
   if (mode === "line" || mode === "dual-line" || mode === "combo") {
-    const width = 640;
-    const height = 260;
-    const left = 36;
-    const right = 16;
-    const top = 16;
-    const bottom = 36;
+    const uid = "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    const width = 680;
+    const height = 292;
+    const left = 46;
+    const right = 24;
+    const top = 34;
+    const bottom = 52;
     const innerW = width - left - right;
     const innerH = height - top - bottom;
+    const padX = rows.length > 1 ? Math.min(44, innerW / (rows.length * 2)) : 0;
+    const plotW = Math.max(innerW - padX * 2, 1);
+    const scale = aleshaNiceScale(max);
+    const yMax = scale.top;
+    const baseY = top + innerH;
     const point = (value, index) => ({
-      x: rows.length > 1 ? left + (index / (rows.length - 1)) * innerW : width / 2,
-      y: top + innerH - (value / max) * innerH
+      x: rows.length > 1 ? left + padX + (index / (rows.length - 1)) * plotW : left + innerW / 2,
+      y: top + innerH - (Math.max(0, value) / yMax) * innerH
     });
     const primary = rows.map((row, index) => point(row.value, index));
-    const secondary = rows.map((row, index) => point(row.secondary, index));
-    const labels = rows.map((row, index) => `<text x="${primary[index].x}" y="${height - 10}" text-anchor="middle" font-size="10.5" font-weight="600" fill="#475569">${esc(row.name).slice(0, 16)}</text>`).join("");
+    const secondary = secondValues.map((value, index) => point(value, index));
+    const ticks = [0, 1, 2, 3, 4].map((stepIndex) => {
+      const tickVal = Math.round((yMax / 4) * stepIndex * 10) / 10;
+      const ty = baseY - (stepIndex / 4) * innerH;
+      const stroke = stepIndex === 0 ? "#cbd5e1" : "#e2e8f0";
+      const dash = stepIndex === 0 ? "" : ' stroke-dasharray="4 4"';
+      return `<line x1="${left}" y1="${ty.toFixed(1)}" x2="${width - right}" y2="${ty.toFixed(1)}" stroke="${stroke}" stroke-width="1"${dash}></line><text x="${left - 8}" y="${(ty + 3.5).toFixed(1)}" text-anchor="end" font-size="10" font-weight="600" fill="#94a3b8">${aleshaFmt(tickVal)}</text>`;
+    }).join("");
+    const primaryPath = aleshaLinePath(primary);
+    const secondaryPath = aleshaLinePath(secondary);
+    const areaFill = mode === "combo" ? "" : `<path d="${primaryPath} L ${primary[primary.length - 1].x.toFixed(1)} ${baseY} L ${primary[0].x.toFixed(1)} ${baseY} Z" fill="url(#${uid}_p)"></path>`;
+    const avgY = top + innerH - (avg / yMax) * innerH;
+    const avgGuide = mode === "line" ? `<line x1="${left}" y1="${avgY.toFixed(1)}" x2="${width - right}" y2="${avgY.toFixed(1)}" stroke="#f59e0b" stroke-width="1.25" stroke-dasharray="5 4" opacity="0.8"></line><rect x="${width - right - 74}" y="${(avgY - 17).toFixed(1)}" width="74" height="15" rx="4" fill="#fffbeb" stroke="#fde68a" stroke-width="1"></rect><text x="${width - right - 37}" y="${(avgY - 6.5).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="700" fill="#b45309">Avg: ${aleshaFmt(avg)}</text>` : "";
     const bars = mode === "combo" ? rows.map((row, index) => {
-      const barWidth = Math.min(36, innerW / rows.length * 0.45);
-      const barHeight = (row.value / max) * innerH;
-      return `<rect x="${primary[index].x - barWidth / 2}" y="${top + innerH - barHeight}" width="${barWidth}" height="${barHeight}" rx="6" fill="${row.color}"></rect>`;
+      const barWidth = Math.min(40, (innerW / Math.max(rows.length, 1)) * 0.5);
+      const barHeight = Math.max(row.value > 0 ? 6 : 0, (row.value / yMax) * innerH);
+      return `<rect x="${(primary[index].x - barWidth / 2).toFixed(1)}" y="${(baseY - barHeight).toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" rx="7" fill="${row.color}" fill-opacity="0.88"></rect>`;
     }).join("") : "";
-    const second = mode === "line" ? "" : `<path d="${aleshaLinePath(secondary)}" fill="none" stroke="#f59e0b" stroke-width="2.5"></path>`;
-    return `<svg viewBox="0 0 ${width} ${height}" class="h-64 w-full">${bars}<path d="${aleshaLinePath(primary)}" fill="none" stroke="#2563eb" stroke-width="2.5"></path>${second}${primary.map((item, index) => `<circle cx="${item.x}" cy="${item.y}" r="3.5" fill="${rows[index].color}"></circle>`).join("")}${labels}</svg>`;
+    const primaryLine = mode === "combo" ? "" : `<path d="${primaryPath}" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`;
+    const secondLine = mode === "line" ? "" : `<path d="${secondaryPath}" fill="none" stroke="#f59e0b" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"${hasSecondary ? "" : ' stroke-dasharray="6 4"'}></path>`;
+    const dotsAndValues = rows.map((row, index) => {
+      const p = primary[index];
+      const s = secondary[index];
+      const share = total > 0 ? Math.round((row.value / total) * 100) : 0;
+      const showSecond = mode !== "line";
+      const close = showSecond && Math.abs(p.y - s.y) < 34;
+      const pBelow = close && p.y > s.y;
+      const sBelow = close && p.y <= s.y;
+      const pPillY = Math.min(baseY - 12, Math.max(14, pBelow ? p.y + 20 : p.y - 20));
+      const sPillY = Math.min(baseY - 12, Math.max(14, sBelow ? s.y + 20 : s.y - 20));
+      const primaryDot = mode === "combo" ? "" : `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5" fill="${row.color}" stroke="#ffffff" stroke-width="2"></circle>`;
+      const primaryLabel = aleshaSvgPill(p.x, pPillY, mode === "line" && rows.length <= 8 ? `${aleshaNum(row.value)} (${share}%)` : aleshaNum(row.value), "#ffffff", "#cbd5e1", "#0f172a");
+      const secondaryDot = showSecond ? `<circle cx="${s.x.toFixed(1)}" cy="${s.y.toFixed(1)}" r="4.5" fill="#f59e0b" stroke="#ffffff" stroke-width="2"></circle>` : "";
+      const secondaryLabel = showSecond ? aleshaSvgPill(s.x, sPillY, aleshaFmt(secondValues[index]), "#fffbeb", "#fcd34d", "#b45309") : "";
+      return `${primaryDot}${secondaryDot}${primaryLabel}${secondaryLabel}`;
+    }).join("");
+    const maxChars = rows.length <= 5 ? 16 : rows.length <= 8 ? 11 : 9;
+    const labels = rows.map((row, index) => {
+      const lines = aleshaWrapLabel(row.name, maxChars);
+      const x = primary[index].x.toFixed(1);
+      const spans = lines.map((line, lineIndex) => `<tspan x="${x}" dy="${lineIndex === 0 ? 0 : 13}">${esc(line)}</tspan>`).join("");
+      return `<text x="${x}" y="${baseY + 18}" text-anchor="middle" font-size="10.5" font-weight="600" fill="#475569"><title>${esc(row.name)}</title>${spans}</text>`;
+    }).join("");
+    const legend = mode === "line"
+      ? `<span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600"><span class="h-2.5 w-2.5 rounded-full bg-blue-600"></span>Nilai Aktual</span><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-700"><span class="h-0.5 w-3.5 border-t-2 border-dashed border-amber-500"></span>Rata-rata (${aleshaFmt(avg)})</span>`
+      : `<span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600"><span class="h-2.5 w-2.5 rounded-full bg-blue-600"></span>${mode === "combo" ? "Batang (Nilai Aktual)" : "Garis Utama (Nilai Aktual)"}</span><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-700"><span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span>${esc(secondLabel)}</span>`;
+    return `<div class="space-y-3"><div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/70 px-1 pb-2 text-xs"><div class="flex flex-wrap items-center gap-3"><span class="font-medium text-slate-600">Total Data: <strong class="text-slate-900">${aleshaNum(total)}</strong></span><span class="font-medium text-slate-500">Rata-rata: <strong class="text-slate-800">${aleshaFmt(avg)}</strong></span></div><div class="flex flex-wrap items-center gap-3">${legend}<span class="text-[11px] text-slate-500">${rows.length} Kategori</span></div></div><div class="rounded-xl border border-slate-200 bg-gradient-to-b from-slate-50/80 to-white px-2 py-2.5"><svg viewBox="0 0 ${width} ${height}" class="h-auto max-h-[320px] w-full"><defs><linearGradient id="${uid}_p" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563eb" stop-opacity="0.22"></stop><stop offset="100%" stop-color="#2563eb" stop-opacity="0.01"></stop></linearGradient></defs>${ticks}${avgGuide}${areaFill}${bars}${primaryLine}${secondLine}${dotsAndValues}${labels}</svg></div></div>`;
   }
   const columns = rows.map((row, index) => {
     const share = total > 0 ? Math.round((row.value / total) * 100) : 0;
