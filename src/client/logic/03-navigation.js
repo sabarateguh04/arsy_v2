@@ -27,11 +27,12 @@
           registerPanel.classList.add("hidden-section");
         }
       }
+      if (pageId === "publicPortal") loadPublicPage();
       if (pageId === "operatorDashboard") {
         paintSession();
         applyMenuAccess();
         applyDataScope();
-        if (!canOpen(activeView)) activeView = defaultOperatorView();
+        if (!canOpen(activeView)) activeView = canOpen("viewMap") ? "viewMap" : "viewKeselamatan";
         switchOperatorView(activeView);
       }
     }
@@ -197,7 +198,7 @@
 
     function switchOperatorView(viewId) {
       if (session && viewId !== "viewProfile" && viewId !== "viewConstruction" && viewId !== "viewMaster" && !canOpen(viewId)) return;
-      const live = viewId === "viewMap" || viewId === "viewKeselamatan" || viewId === "viewProfile" || viewId === "viewUsers" || viewId === "viewMenuAdmin" || viewId === "viewSurvey" || viewId === "viewMaster";
+      const live = viewId === "viewMap" || viewId === "viewKeselamatan" || viewId === "viewProfile" || viewId === "viewUsers" || viewId === "viewMenuAdmin" || viewId === "viewPublicAdmin" || viewId === "viewSurvey" || viewId === "viewMaster";
       const shown = live ? viewId : "viewConstruction";
       activeView = viewId;
       document.querySelectorAll("[data-view]").forEach((section) => {
@@ -208,6 +209,7 @@
         if (side) document.getElementById("constructTitle").textContent = side.textContent.trim();
       }
       if (shown === "viewMenuAdmin") renderMenuAdmin();
+      if (shown === "viewPublicAdmin") openPublicAdmin();
       if (shown === "viewSurvey") paintSurvey();
 
       document.querySelectorAll("[data-pill]").forEach((btn) => {

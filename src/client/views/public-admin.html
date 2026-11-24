@@ -1,0 +1,23 @@
+<section id="viewPublicAdmin" data-view class="absolute inset-0 hidden-section overflow-auto bg-[#eef2f7] p-4 pb-24 md:p-6 md:pb-24">
+          <div class="pub-admin-head mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p class="text-sm font-semibold text-brand-orange">Administrasi</p>
+              <h2 class="text-2xl font-semibold text-slate-900">Manajemen Public</h2>
+              <p class="mt-1 max-w-2xl text-sm leading-relaxed text-slate-500">Kelola isi halaman publik per bagian. Simpan dulu agar pengunjung melihat versi terbaru.</p>
+            </div>
+            <button type="button" id="publicAdminSave" class="inline-flex w-fit shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-orange px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-orange-950/10 transition hover:-translate-y-0.5 hover:shadow-lg">
+              <i class="fa-solid fa-floppy-disk"></i> Simpan ke halaman publik
+            </button>
+          </div>
+          <nav class="pub-tabs mb-4" aria-label="Bagian halaman publik">
+            <button type="button" data-public-tab="hero" class="is-on"><i class="fa-solid fa-house"></i> Beranda</button>
+            <button type="button" data-public-tab="profile"><i class="fa-solid fa-id-card"></i> Profile</button>
+            <button type="button" data-public-tab="focus"><i class="fa-solid fa-layer-group"></i> 6 Focus</button>
+            <button type="button" data-public-tab="news"><i class="fa-solid fa-newspaper"></i> Berita</button>
+            <button type="button" data-public-tab="program"><i class="fa-solid fa-flag"></i> Program</button>
+            <button type="button" data-public-tab="contact"><i class="fa-solid fa-phone"></i> Kontak</button>
+          </nav>
+          <p id="publicAdminNote" class="mb-4 hidden-section rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"></p>
+          <p id="publicAdminError" class="mb-4 hidden-section rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"></p>
+          <div id="publicAdminBody" class="space-y-4"></div>
+        </section>

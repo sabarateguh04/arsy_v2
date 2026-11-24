@@ -10,5 +10,6 @@
   "09-session.js",
   "10-master.js",
   "11-alesha-chat.js",
-  "12-alesha-kiosk.js"
+  "12-alesha-kiosk.js",
+  "13-public.js"
 ]

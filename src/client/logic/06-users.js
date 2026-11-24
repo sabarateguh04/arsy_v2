@@ -23,7 +23,13 @@
       tbody.innerHTML = rows.map(({ user, index }) => {
         const badge = user.status === "Aktif"
           ? "bg-emerald-100 text-emerald-700"
-          : "bg-slate-100 text-slate-500";
+          : user.status === "Menunggu"
+            ? "bg-amber-100 text-amber-800"
+            : "bg-slate-100 text-slate-500";
+        const pending = user.status === "Menunggu"
+          ? `<button type="button" data-user-action="approve" data-user-index="${index}" class="grid h-8 w-8 place-items-center rounded-lg text-emerald-600 hover:bg-emerald-50" aria-label="Setujui ${esc(user.name)}"><i class="fa-solid fa-check"></i></button>
+              <button type="button" data-user-action="reject" data-user-index="${index}" class="grid h-8 w-8 place-items-center rounded-lg text-amber-700 hover:bg-amber-50" aria-label="Tolak ${esc(user.name)}"><i class="fa-solid fa-xmark"></i></button>`
+          : "";
         return `<tr class="border-b border-slate-100 hover:bg-slate-50">
           <td class="px-4 py-3">
             <p class="font-medium text-slate-900">${esc(user.name)}</p>
@@ -36,6 +42,7 @@
           <td class="px-4 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold ${badge}">${esc(user.status)}</span></td>
           <td class="px-4 py-3">
             <div class="flex items-center gap-1">
+              ${pending}
               <button type="button" data-user-action="view" data-user-index="${index}" class="grid h-8 w-8 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-brand-blue" aria-label="Lihat ${esc(user.name)}"><i class="fa-solid fa-eye"></i></button>
               <button type="button" data-user-action="edit" data-user-index="${index}" class="grid h-8 w-8 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-brand-blue" aria-label="Ubah ${esc(user.name)}"><i class="fa-solid fa-pen"></i></button>
               <button type="button" data-user-action="delete" data-user-index="${index}" class="grid h-8 w-8 place-items-center rounded-lg text-slate-500 hover:bg-red-50 hover:text-red-600" aria-label="Hapus ${esc(user.name)}"><i class="fa-solid fa-trash"></i></button>

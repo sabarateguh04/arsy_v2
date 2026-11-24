@@ -23,7 +23,7 @@ function publicUser(row) {
     kota: row.kota || "",
     polda: poldaKey(row.provinsi),
     status: row.status,
-    cakupan: row.cakupan || (row.role === "Admin" || row.role === "Eksekutif 1" || row.role === "Editor Berita" ? "nasional" : row.role === "Eksekutif 2" ? "provinsi" : "kota")
+    cakupan: row.cakupan || (row.role === "Admin" || row.role === "Eksekutif 1" ? "nasional" : row.role === "Eksekutif 2" ? "provinsi" : "kota")
   };
 }
 
@@ -85,7 +85,7 @@ async function findById(id) {
 }
 
 async function listUsers() {
-  const rows = await query(USER_SELECT + "ORDER BY u.id ASC");
+  const rows = await query(USER_SELECT + "ORDER BY FIELD(u.status, 'Menunggu', 'Aktif', 'Nonaktif'), u.id ASC");
   return rows.map(publicUser);
 }
 
@@ -107,7 +107,7 @@ async function cleanUser(body, existing) {
   const status = String((body && body.status) || "Aktif").trim();
   if (!name) return { error: "Nama wajib diisi." };
   if (!email || !email.includes("@")) return { error: "Email tidak valid." };
-  if (status !== "Aktif" && status !== "Nonaktif") return { error: "Status tidak valid." };
+  if (status !== "Aktif" && status !== "Nonaktif" && status !== "Menunggu") return { error: "Status tidak valid." };
   let provinsi = String((body && body.provinsi) || "").trim().slice(0, 120);
   let kota = String((body && body.kota) || "").trim().slice(0, 120);
   if (roleRow.cakupan === "nasional") {
@@ -186,9 +186,16 @@ async function currentPublicUser(req) {
 
 async function login(email, password) {
   const user = await findByEmail(email);
-  if (!user || user.status !== "Aktif") return null;
-  if (!bcrypt.compareSync(String(password || ""), user.password_hash)) return null;
-  return publicUser(user);
+  if (!user || !bcrypt.compareSync(String(password || ""), user.password_hash)) {
+    return { error: "Email atau kata sandi tidak cocok.", status: 401 };
+  }
+  if (user.status === "Menunggu") {
+    return { error: "Akun menunggu persetujuan admin.", status: 403 };
+  }
+  if (user.status !== "Aktif") {
+    return { error: "Akun sedang nonaktif.", status: 403 };
+  }
+  return { user: publicUser(user) };
 }
 
 async function registerAreas() {
@@ -232,7 +239,7 @@ async function register(body) {
     jabatan: "Operator",
     provinsi,
     kota,
-    status: "Aktif"
+    status: "Menunggu"
   });
 }
 

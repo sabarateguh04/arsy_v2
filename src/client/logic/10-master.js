@@ -152,7 +152,6 @@
 
     function roleShort(name) {
       if (name === "Operator") return "OP";
-      if (name === "Editor Berita") return "EB";
       const digit = String(name).match(/(\d+)/);
       if (String(name).indexOf("Eksekutif") === 0 && digit) return "E" + digit[1];
       return String(name || "").slice(0, 2).toUpperCase() || "R";
@@ -168,7 +167,7 @@
 
     function paintAccessMatrix(headId, bodyId) {
       const roles = accessRoles();
-      const skip = { viewUsers: true, viewMenuAdmin: true, mrole: true, mjabatan: true, mprovinsi: true, mkota: true };
+      const skip = { viewUsers: true, viewMenuAdmin: true, viewPublicAdmin: true, mrole: true, mjabatan: true, mprovinsi: true, mkota: true };
       let items = (masterCatalog.menus || []).filter((item) => item.status === "Aktif" && !skip[item.menu_key]);
       if (!items.length) {
         items = menuCatalog().map((item) => ({ menu_key: item.key, label: item.label, grup: item.group, status: "Aktif" }));

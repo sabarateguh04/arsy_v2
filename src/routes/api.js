@@ -4,6 +4,7 @@ const path = require("path");
 const store = require("../store");
 const users = require("../users");
 const master = require("../master");
+const publicContent = require("../publicContent");
 
 const router = express.Router();
 const TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/jpg": "jpg", "image/webp": "webp", "image/gif": "gif" };
@@ -47,13 +48,13 @@ router.post("/login", async (req, res) => {
   const email = text(req.body && req.body.email, 190);
   const password = String((req.body && req.body.password) || "");
   try {
-    const user = await users.login(email, password);
-    if (!user) {
-      res.status(401).json({ error: "Email atau kata sandi tidak cocok, atau akun sedang nonaktif." });
+    const result = await users.login(email, password);
+    if (result.error) {
+      res.status(result.status || 401).json({ error: result.error });
       return;
     }
-    users.setSessionCookie(res, users.createSession(user));
-    res.json(user);
+    users.setSessionCookie(res, users.createSession(result.user));
+    res.json(result.user);
   } catch (error) {
     res.status(503).json({ error: "Layanan akun belum siap. Coba lagi." });
   }
@@ -80,8 +81,10 @@ router.post("/register", async (req, res) => {
       res.status(result.status || 400).json({ error: result.error });
       return;
     }
-    users.setSessionCookie(res, users.createSession(result.user));
-    res.status(201).json(result.user);
+    res.status(201).json({
+      pending: true,
+      message: "Pendaftaran diterima. Tunggu persetujuan admin sebelum masuk."
+    });
   } catch (error) {
     res.status(500).json({ error: "Pendaftaran belum bisa disimpan." });
   }
@@ -199,6 +202,33 @@ router.get("/master/catalog", async (req, res) => {
       res.status(500).json({ error: "Data belum terhapus." });
     }
   });
+});
+
+router.get("/public", async (req, res) => {
+  try {
+    res.json(await publicContent.getPublic());
+  } catch (error) {
+    res.json(publicContent.defaultPublic());
+  }
+});
+
+router.put("/public", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  try {
+    res.json(await publicContent.savePublic(req.body || {}));
+  } catch (error) {
+    res.status(500).json({ error: "Konten publik belum tersimpan." });
+  }
+});
+
+router.post("/public/photo", (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const saved = savePhoto(req.body || {});
+  if (!saved) {
+    res.status(400).json({ error: "Foto tidak bisa disimpan." });
+    return;
+  }
+  res.json(saved);
 });
 
 router.get("/state", async (req, res) => {

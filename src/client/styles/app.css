@@ -478,6 +478,183 @@
     @media (max-width: 767px) {
       #mapGisPanel:not(.is-open) { display: none; }
     }
+    #viewPublicAdmin .pub-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      padding: 0.28rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    #viewPublicAdmin [data-public-tab] {
+      display: inline-flex;
+      flex: 1 1 7.5rem;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      border: 0;
+      border-radius: 0.75rem;
+      background: transparent;
+      padding: 0.6rem 0.8rem;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    #viewPublicAdmin [data-public-tab] i { width: 0.95rem; text-align: center; color: #94a3b8; }
+    #viewPublicAdmin [data-public-tab]:hover { background: #f8fafc; color: #0f172a; }
+    #viewPublicAdmin [data-public-tab].is-on {
+      background: #1e3a8a;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(30, 58, 138, 0.18);
+    }
+    #viewPublicAdmin [data-public-tab].is-on i { color: #fdba74; }
+    #viewPublicAdmin .pub-card {
+      overflow: hidden;
+      border: 1px solid #e8eef6;
+      border-radius: 1.15rem;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    #viewPublicAdmin .pub-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+      background: linear-gradient(180deg, #f8fbff 0%, #fff 100%);
+      padding: 1rem 1.15rem;
+    }
+    #viewPublicAdmin .pub-card-head h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    #viewPublicAdmin .pub-card-head p {
+      margin-top: 0.2rem;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: #64748b;
+    }
+    #viewPublicAdmin .pub-card-body { padding: 1.05rem 1.15rem 1.2rem; }
+    #viewPublicAdmin .pub-field {
+      margin-top: 0.4rem;
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.85rem;
+      background: #fff;
+      padding: 0.7rem 0.9rem;
+      font-size: 0.875rem;
+      color: #0f172a;
+    }
+    #viewPublicAdmin textarea.pub-field { min-height: 5.5rem; resize: vertical; }
+    #viewPublicAdmin .pub-field:focus {
+      outline: none;
+      border-color: #1e3a8a;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+    }
+    #viewPublicAdmin .pub-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+    #viewPublicAdmin .pub-hint {
+      margin-top: 0.35rem;
+      font-size: 11px;
+      line-height: 1.4;
+      color: #94a3b8;
+    }
+    #viewPublicAdmin .pub-item {
+      border: 1px solid #e8eef6;
+      border-radius: 1rem;
+      background: #fff;
+      padding: 0.95rem 1rem 1.05rem;
+    }
+    #viewPublicAdmin .pub-item.is-featured {
+      border-color: #fed7aa;
+      box-shadow: inset 3px 0 0 #f97316;
+    }
+    #viewPublicAdmin .pub-item-head {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 0.85rem;
+    }
+    #viewPublicAdmin .pub-item-num {
+      display: grid;
+      height: 1.75rem;
+      width: 1.75rem;
+      flex-shrink: 0;
+      place-items: center;
+      border-radius: 0.55rem;
+      background: #e8eefc;
+      color: #1e3a8a;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    #viewPublicAdmin .pub-item-label {
+      min-width: 0;
+      flex: 1;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    #viewPublicAdmin .pub-remove {
+      display: grid;
+      height: 2rem;
+      width: 2rem;
+      place-items: center;
+      border-radius: 0.6rem;
+      color: #94a3b8;
+    }
+    #viewPublicAdmin .pub-remove:hover { background: #fef2f2; color: #dc2626; }
+    #viewPublicAdmin .pub-add {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      border: 1px dashed #cbd5e1;
+      border-radius: 0.75rem;
+      background: #f8fafc;
+      padding: 0.45rem 0.8rem;
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+    }
+    #viewPublicAdmin .pub-add:hover { border-color: #1e3a8a; background: #eef2ff; color: #1e3a8a; }
+    #viewPublicAdmin .pub-thumb {
+      height: 5.5rem;
+      width: 5.5rem;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: 0.9rem;
+      background: #e2e8f0;
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+    }
+    #viewPublicAdmin .pub-thumb img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+    #viewPublicAdmin .pub-upload {
+      display: inline-flex;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      border-radius: 0.85rem;
+      background: #1e3a8a;
+      padding: 0.7rem 0.95rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    #viewPublicAdmin .pub-upload:hover { background: #172e6f; }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after {

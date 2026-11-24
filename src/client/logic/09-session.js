@@ -43,13 +43,15 @@ async function enterSession(found) {
   session = found;
   await loadCatalog();
   if (session.role === "Admin") await loadUsers();
-  activeView = defaultOperatorView();
+  activeView = canOpen("viewMap") ? "viewMap" : "viewKeselamatan";
   showPage("operatorDashboard");
 }
 
 async function attemptLogin(email, password) {
   await stateReady;
   const error = document.getElementById("loginError");
+  const note = document.getElementById("loginNote");
+  if (note) note.classList.add("hidden");
   let found = null;
   try {
     const response = await fetch("/api/login", {
@@ -57,9 +59,10 @@ async function attemptLogin(email, password) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
-    if (response.ok) found = await response.json();
-    else if (response.status >= 500) {
-      error.textContent = "Layanan akun belum siap. Coba lagi.";
+    const data = await response.json().catch(() => ({}));
+    if (response.ok) found = data;
+    else {
+      error.textContent = data.error || (response.status >= 500 ? "Layanan akun belum siap. Coba lagi." : "Email atau kata sandi tidak cocok, atau akun sedang nonaktif.");
       error.classList.remove("hidden");
       return;
     }
@@ -107,7 +110,11 @@ function showAuth(mode) {
   document.getElementById("loginPanel").classList.toggle("hidden-section", isRegister);
   document.getElementById("registerPanel").classList.toggle("hidden-section", !isRegister);
   document.title = isRegister ? "Daftar · ARSY" : "Masuk · ARSY";
-  if (isRegister) fillRegisterAreas();
+  if (isRegister) {
+    const note = document.getElementById("loginNote");
+    if (note) note.classList.add("hidden");
+    fillRegisterAreas();
+  }
 }
 
 async function loadCatalog() {
@@ -171,7 +178,15 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
       error.classList.remove("hidden");
       return;
     }
-    await enterSession(data);
+    document.getElementById("registerForm").reset();
+    fillRegisterKota();
+    showAuth("login");
+    const note = document.getElementById("loginNote");
+    if (note) {
+      note.textContent = data.message || "Pendaftaran diterima. Tunggu persetujuan admin sebelum masuk.";
+      note.classList.remove("hidden");
+    }
+    document.getElementById("loginError").classList.add("hidden");
   } catch (err) {
     error.textContent = "Layanan akun belum siap. Coba lagi.";
     error.classList.remove("hidden");
@@ -243,10 +258,30 @@ document.querySelectorAll("#filterMenu [data-status]").forEach((button) => {
   });
 });
 document.getElementById("addUserBtn").addEventListener("click", () => openUserModal("create", -1));
-document.getElementById("userTableBody").addEventListener("click", (event) => {
+document.getElementById("userTableBody").addEventListener("click", async (event) => {
   const button = event.target.closest("[data-user-action]");
   if (!button) return;
-  openUserModal(button.dataset.userAction, Number(button.dataset.userIndex));
+  const action = button.dataset.userAction;
+  const index = Number(button.dataset.userIndex);
+  const current = users[index];
+  if ((action === "approve" || action === "reject") && current) {
+    const response = await fetch("/api/users/" + encodeURIComponent(current.id), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: current.name,
+        email: current.email,
+        role: current.role,
+        jabatan: current.jabatan,
+        provinsi: current.provinsi,
+        kota: current.kota,
+        status: action === "approve" ? "Aktif" : "Nonaktif"
+      })
+    });
+    if (response.ok) await loadUsers();
+    return;
+  }
+  openUserModal(action, index);
 });
 document.getElementById("userForm").addEventListener("submit", async (event) => {
   event.preventDefault();
