@@ -50,6 +50,7 @@
           else if (role === "Eksekutif 2") grants[role][item.key] = ["viewMap", "viewKeselamatan", "viewKetertiban", "viewKelancaran"].includes(item.key) || item.group === "Data Sekunder";
           else if (role === "Eksekutif 3") grants[role][item.key] = ["viewMap", "viewKeselamatan", "viewKeamanan"].includes(item.key);
           else if (role === "Operator") grants[role][item.key] = item.key === "viewMap" || item.key === "viewKeselamatan";
+          else if (role === "Editor Berita") grants[role][item.key] = item.key === "aktifitas";
           else grants[role][item.key] = false;
         });
       });
@@ -75,6 +76,13 @@
       if (key === "viewSurvey") key = "mobile";
       if (session.role === "Admin") return true;
       return !!(menuGrants && menuGrants[session.role] && menuGrants[session.role][key]);
+    }
+
+    function defaultOperatorView() {
+      if (canOpen("viewMap")) return "viewMap";
+      if (canOpen("viewKeselamatan")) return "viewKeselamatan";
+      if (canOpen("aktifitas")) return "aktifitas";
+      return "viewProfile";
     }
 
     function setShown(element, on) {
@@ -118,7 +126,8 @@
         "Eksekutif 1": "Data nasional seluruh polda. Menu yang tampil mengikuti pengaturan admin.",
         "Eksekutif 2": "Hanya data " + wilayah + ". Angka nasional dan polda lain tidak ditampilkan.",
         "Eksekutif 3": "Hanya data kota " + (session.kota || wilayah) + ". Data di luar kota ini tidak ditampilkan.",
-        Operator: "Hanya data kota " + (session.kota || wilayah) + ", pada menu yang dibuka untuk petugas."
+        Operator: "Hanya data kota " + (session.kota || wilayah) + ", pada menu yang dibuka untuk petugas.",
+        "Editor Berita": "Mengelola kabar dan unggahan publik di menu Aktifitas. Cakupan data nasional."
       };
       document.getElementById("menuAccountInitial").textContent = initials;
       document.getElementById("menuAccountName").textContent = session.name;

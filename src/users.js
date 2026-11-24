@@ -23,7 +23,7 @@ function publicUser(row) {
     kota: row.kota || "",
     polda: poldaKey(row.provinsi),
     status: row.status,
-    cakupan: row.cakupan || (row.role === "Admin" || row.role === "Eksekutif 1" ? "nasional" : row.role === "Eksekutif 2" ? "provinsi" : "kota")
+    cakupan: row.cakupan || (row.role === "Admin" || row.role === "Eksekutif 1" || row.role === "Editor Berita" ? "nasional" : row.role === "Eksekutif 2" ? "provinsi" : "kota")
   };
 }
 

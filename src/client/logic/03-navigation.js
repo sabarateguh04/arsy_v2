@@ -31,7 +31,7 @@
         paintSession();
         applyMenuAccess();
         applyDataScope();
-        if (!canOpen(activeView)) activeView = canOpen("viewMap") ? "viewMap" : "viewKeselamatan";
+        if (!canOpen(activeView)) activeView = defaultOperatorView();
         switchOperatorView(activeView);
       }
     }

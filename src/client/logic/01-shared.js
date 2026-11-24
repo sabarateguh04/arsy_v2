@@ -120,7 +120,7 @@
       kotaSelect.value = cities.includes(kota) ? kota : cities[0];
     }
 
-    const ACCESS_ROLES = ["Eksekutif 1", "Eksekutif 2", "Eksekutif 3", "Operator"];
+    const ACCESS_ROLES = ["Eksekutif 1", "Eksekutif 2", "Eksekutif 3", "Operator", "Editor Berita"];
 
     function accessRoles() {
       const rows = (masterCatalog.roles || []).filter((role) => role.name !== "Admin" && role.status === "Aktif");
@@ -131,7 +131,7 @@
     function roleCakupan(roleName) {
       const row = (masterCatalog.roles || []).find((role) => role.name === roleName);
       if (row && row.cakupan) return row.cakupan;
-      if (roleName === "Admin" || roleName === "Eksekutif 1") return "nasional";
+      if (roleName === "Admin" || roleName === "Eksekutif 1" || roleName === "Editor Berita") return "nasional";
       if (roleName === "Eksekutif 2") return "provinsi";
       return "kota";
     }

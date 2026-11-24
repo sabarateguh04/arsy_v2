@@ -43,7 +43,7 @@ async function enterSession(found) {
   session = found;
   await loadCatalog();
   if (session.role === "Admin") await loadUsers();
-  activeView = canOpen("viewMap") ? "viewMap" : "viewKeselamatan";
+  activeView = defaultOperatorView();
   showPage("operatorDashboard");
 }
 

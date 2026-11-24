@@ -152,6 +152,7 @@
 
     function roleShort(name) {
       if (name === "Operator") return "OP";
+      if (name === "Editor Berita") return "EB";
       const digit = String(name).match(/(\d+)/);
       if (String(name).indexOf("Eksekutif") === 0 && digit) return "E" + digit[1];
       return String(name || "").slice(0, 2).toUpperCase() || "R";
