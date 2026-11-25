@@ -1,5 +1,6 @@
     let activeView = "viewMap";
     let map = null;
+    let mapFitToken = "";
     const layerGroups = {};
     const routeLines = {};
     const charts = {};

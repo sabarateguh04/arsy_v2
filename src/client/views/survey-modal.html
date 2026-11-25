@@ -1,0 +1,44 @@
+<!-- Survey map picker + photo lightbox -->
+  <div id="surveyMapModal" class="hidden-section fixed inset-0 z-[90] flex items-end justify-center p-4 sm:items-center">
+    <div class="absolute inset-0 bg-slate-900/50" data-close-survey-map></div>
+    <div class="relative flex h-[min(92vh,42rem)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+      <div class="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-brand-orange">Smart Survey</p>
+          <h3 class="mt-1 text-lg font-semibold text-slate-900">Pilih lokasi di peta</h3>
+          <p class="mt-0.5 text-xs text-slate-500">Klik peta atau geser penanda. Nama jalan terisi otomatis dari titik itu.</p>
+        </div>
+        <button type="button" data-close-survey-map class="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-slate-400 hover:bg-slate-100" aria-label="Tutup peta">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="surveyMapSearchForm" class="flex gap-2 border-b border-slate-100 px-5 py-3">
+        <input id="surveyMapSearch" type="search" placeholder="Cari nama jalan atau tempat" class="survey-input min-w-0 flex-1 !py-2.5">
+        <button type="submit" class="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#0b1f4a] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#163a86]">
+          <i class="fa-solid fa-magnifying-glass text-xs"></i> Cari
+        </button>
+      </form>
+      <div class="relative min-h-0 flex-1 bg-slate-100">
+        <div id="surveyPickMap"></div>
+      </div>
+      <div class="border-t border-slate-100 px-5 py-4">
+        <p id="surveyMapHint" class="text-xs text-slate-500">Klik peta untuk menandai titik gangguan.</p>
+        <p id="surveyMapRoadPreview" class="mt-1 text-sm font-semibold text-[#0b1f4a]">—</p>
+        <p id="surveyMapCoordPreview" class="text-xs tabular-nums text-slate-500">—</p>
+        <div class="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <button type="button" data-close-survey-map class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">Batal</button>
+          <button type="button" id="surveyMapApply" class="rounded-xl bg-brand-orange px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600">Gunakan lokasi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="surveyPhotoModal" class="hidden-section fixed inset-0 z-[95] flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-950/80" data-close-survey-photo></div>
+    <button type="button" data-close-survey-photo class="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-slate-700 shadow-md hover:bg-white" aria-label="Tutup foto">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <figure class="relative max-h-[92vh] max-w-[min(96vw,72rem)]">
+      <img id="surveyPhotoFull" alt="" class="max-h-[86vh] max-w-full rounded-2xl object-contain shadow-2xl">
+      <figcaption id="surveyPhotoCaption" class="mt-3 text-center text-sm text-white/80"></figcaption>
+    </figure>
+  </div>

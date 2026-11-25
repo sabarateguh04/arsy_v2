@@ -11,6 +11,23 @@ function poldaKey(provinsi) {
   return provinsi || "";
 }
 
+const METRO_KOTA = ["Jakarta Pusat", "Jakarta Utara", "Jakarta Barat", "Jakarta Selatan", "Jakarta Timur", "Kepulauan Seribu", "Depok", "Tangerang", "Tangerang Selatan", "Bekasi"];
+
+function reportVisible(user, row) {
+  if (!user || !row) return false;
+  if (user.role === "Admin" || user.cakupan === "nasional") return true;
+  if (user.role === "Operator") {
+    if (row.userId) return row.userId === user.id;
+    return row.officer === user.name && (!row.kota || row.kota === user.kota);
+  }
+  if (user.cakupan === "provinsi") {
+    const key = user.polda || poldaKey(user.provinsi);
+    if (key === "Jakarta Raya") return row.poldaKey === "Jakarta Raya" || METRO_KOTA.includes(row.kota);
+    return row.poldaKey === key;
+  }
+  return row.kota === user.kota;
+}
+
 function publicUser(row) {
   if (!row) return null;
   return {
@@ -257,5 +274,6 @@ module.exports = {
   deleteUser,
   login,
   register,
-  registerAreas
+  registerAreas,
+  reportVisible
 };

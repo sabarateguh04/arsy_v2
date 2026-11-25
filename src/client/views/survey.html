@@ -93,7 +93,10 @@
                       <input id="surveyCoord" type="text" required class="survey-input" placeholder="-6.2088, 106.8456">
                       <button type="button" id="surveyGps" class="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[#1e3a8a] bg-[#e7eef8] text-[#1e3a8a] hover:bg-[#1e3a8a] hover:text-white" title="Ambil lokasi saat ini" aria-label="Ambil lokasi saat ini"><i class="fa-solid fa-crosshairs"></i></button>
                     </div>
-                    <p id="surveyGpsMsg" class="mt-1 text-xs text-slate-500">Tombol target mengisi koordinat dari perangkat.</p>
+                    <button type="button" id="surveyMapBtn" class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#1e3a8a] bg-white px-4 py-2.5 text-sm font-semibold text-[#1e3a8a] hover:bg-[#e7eef8]">
+                      <i class="fa-solid fa-map-location-dot"></i> Pilih lokasi di peta
+                    </button>
+                    <p id="surveyGpsMsg" class="mt-1 text-xs text-slate-500">GPS mengisi koordinat perangkat. Pilih di peta untuk menandai titik, lat/lng, dan nama jalan.</p>
                   </div>
                   <label class="block text-sm font-medium text-slate-600">Keterangan <span class="text-red-500">*</span>
                     <textarea id="surveyDetail" rows="3" required class="survey-input mt-1.5 resize-none" placeholder="Kronologi, situasi, atau keterangan pendukung"></textarea>
@@ -129,7 +132,7 @@
               <p class="mt-1 text-xs text-slate-500">Setelah disimpan, laporan muncul di tabel ini.</p>
             </div>
             <div id="surveyTableWrap" class="hidden overflow-x-auto">
-              <table class="w-full min-w-[36rem] text-left text-sm">
+              <table class="w-full min-w-[44rem] text-left text-sm">
                 <thead>
                   <tr class="border-b border-[#e7eef6] bg-[#f7f9fc] text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
                     <th class="px-4 py-3 font-semibold">Waktu</th>
@@ -138,7 +141,7 @@
                     <th class="px-4 py-3 font-semibold">Penyebab</th>
                     <th class="hidden px-4 py-3 font-semibold md:table-cell">Petugas</th>
                     <th class="px-4 py-3 font-semibold">Foto</th>
-                    <th class="px-4 py-3"></th>
+                    <th class="px-4 py-3 text-right font-semibold">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="surveyRows"></tbody>

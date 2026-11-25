@@ -17,7 +17,7 @@
               <button type="button" data-safe-tab="populasi" class="shrink-0 rounded-full bg-[#1d4ed8] px-4 py-2 text-[11px] font-bold tracking-wide text-white sm:text-xs">INDEKS FATALITAS BERBASIS POPULASI</button>
               <button type="button" data-safe-tab="kendaraan" class="shrink-0 rounded-full bg-[#1d4ed8] px-4 py-2 text-[11px] font-bold tracking-wide text-white sm:text-xs">INDEKS FATALITAS BERBASIS KENDARAAN</button>
             </div>
-            <p class="px-4 py-1.5 text-center text-[12px] font-medium tracking-wide text-white/80">Pembaruan Terakhir : <span class="font-semibold text-white">1 Januari – 17 November 2026</span></p>
+            <p class="px-4 py-1.5 text-center text-[12px] font-medium tracking-wide text-white/80">Pembaruan Terakhir : <span id="safeUpdated" class="font-semibold text-white">1 Januari – 25 November 2026</span></p>
           </div>
 
           <div id="safeStage" class="relative flex h-[calc(100%-8.75rem)] min-h-[28rem] flex-col bg-[#e7eef2]">
@@ -226,7 +226,7 @@
                   <table class="w-full text-left text-[11px]">
                     <thead class="sticky top-0 bg-white text-[11px] text-[#1d4ed8]">
                       <tr class="border-y border-slate-200">
-                        <th class="px-3 py-2 font-semibold">Polda</th>
+                        <th id="safeTableUnit" class="px-3 py-2 font-semibold">Polda</th>
                         <th class="px-2 py-2 text-right font-semibold">CFR</th>
                         <th class="px-2 py-2 text-right font-semibold">Perubahan</th>
                         <th class="px-2 py-2 text-right font-semibold">MR</th>

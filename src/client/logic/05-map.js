@@ -400,6 +400,43 @@
       setText("jplCountLain", jplCounts.lain);
     }
 
+    function fitMapToScope() {
+      if (!map || !window.google || !session) return;
+      const token = session.id + ":" + roleLevel(session) + ":" + (session.kota || "") + ":" + sessionPoldaKey();
+      if (mapFitToken === token) return;
+      mapFitToken = token;
+      const level = roleLevel(session);
+      if (level === "nasional") {
+        map.setCenter({ lat: -2.5, lng: 118 });
+        map.setZoom(5);
+        return;
+      }
+      const bounds = new google.maps.LatLngBounds();
+      let count = 0;
+      const take = (item) => {
+        if (!item || !item.get || !item.getPosition) return;
+        if (item.get("scoped") && !kotaAllowed(item.get("kota"))) return;
+        if (!item.get("scoped") && level !== "nasional") return;
+        const pos = item.getPosition();
+        if (!pos) return;
+        bounds.extend(pos);
+        count += 1;
+      };
+      Object.values(layerGroups).forEach((items) => items.forEach(take));
+      Object.values(gisGroups).forEach((items) => items.forEach(take));
+      if (!count) {
+        map.setCenter({ lat: MAP_HOME.lat, lng: MAP_HOME.lng });
+        map.setZoom(level === "kota" ? 12 : 10);
+        return;
+      }
+      if (count === 1) {
+        map.setCenter(bounds.getCenter());
+        map.setZoom(level === "kota" ? 13 : 11);
+        return;
+      }
+      map.fitBounds(bounds, 56);
+    }
+
     function applyGisScope() {
       if (!map) return;
       const counts = { kota: 0, cctv: 0, perangkat: 0, petugas: 0, contingency: 0, rutin: 0, macet: 0, jpl: 0 };

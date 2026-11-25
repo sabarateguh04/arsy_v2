@@ -150,6 +150,7 @@
         year,
         month,
         polda,
+        polres,
         share,
         yearFactor,
         monthFactor,
@@ -335,7 +336,44 @@
       return { year, month: month - 1 };
     }
 
-    function safePoldaSlice(row, year, month) {
+    function polresOfficialName(kota) {
+      if (!kota) return "Polres";
+      if (METRO_KOTA.includes(kota) || sessionPoldaKey() === "Jakarta Raya") return "Polres Metro " + kota;
+      return "Polres " + kota;
+    }
+
+    function polresMix(kota) {
+      const seed = [...String(kota || "")].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+      return {
+        share: 0.14 + (seed % 20) / 100,
+        mdTilt: 0.78 + (seed % 36) / 100
+      };
+    }
+
+    function applyPolresMix(slice, kota) {
+      if (!kota || kota === "all") return slice;
+      const mix = polresMix(kota);
+      return { md: slice.md * mix.share * mix.mdTilt, laka: slice.laka * mix.share };
+    }
+
+    function safeKickerPlace(scope) {
+      const level = roleLevel(session);
+      if (level === "kota" && session && session.kota) return session.kota;
+      if (scope.polres && scope.polres !== "all") return scope.polres;
+      if (level === "provinsi") {
+        const key = sessionPoldaKey();
+        return key === "Jakarta Raya" ? "Metro Jaya" : (key || "Polda");
+      }
+      if (scope.polda && scope.polda !== "all") return scope.polda === "Jakarta Raya" ? "Metro Jaya" : scope.polda;
+      return String(scope.year);
+    }
+
+    function safePoldaYearSlice(row, year) {
+      const yearFactor = year === 2026 ? 1 : year === 2025 ? 1.12 : 1.2;
+      return { md: row.md * yearFactor, laka: row.laka * yearFactor };
+    }
+
+    function safePoldaSlice(row, year, month, ignorePolres) {
       if (!safePoldaInScope(row)) return { md: 0, laka: 0 };
       const yearFactor = year === 2026 ? 1 : year === 2025 ? 1.12 : 1.2;
       const seed = row.name.length;
@@ -343,10 +381,60 @@
       const waveLaka = 0.8 + 0.34 * (0.5 + 0.5 * Math.sin((month + seed) * 0.47 + 1.1));
       const polda = document.getElementById("safePolda").value;
       const polres = document.getElementById("safePolres").value;
-      const polresFactor = polres !== "all" && polda !== "all" && row.provinces.includes(polda) ? 0.34 : 1;
+      const polresFactor = !ignorePolres && polres !== "all" && polda !== "all" && row.provinces.includes(polda) ? 0.34 : 1;
       return {
         md: row.md * yearFactor * (waveMd / 12) * polresFactor,
         laka: row.laka * yearFactor * (waveLaka / 12) * polresFactor
+      };
+    }
+
+    function safePlaceKota(scope) {
+      const level = roleLevel(session);
+      if (level === "kota" && session && session.kota) return session.kota;
+      if (scope.polres && scope.polres !== "all") return scope.polres;
+      return "";
+    }
+
+    function safePlaceStats(scope) {
+      const kota = safePlaceKota(scope);
+      const national = roleLevel(session) === "nasional" && scope.polda === "all" && !kota;
+      if (national) {
+        return {
+          deaths: scope.deaths,
+          crashes: scope.crashes,
+          people: Math.round(SAFE_NATIONAL.people * scope.share),
+          vehicles: Math.round(SAFE_NATIONAL.vehicles * scope.share),
+          drivers: Math.round(SAFE_NATIONAL.drivers * scope.share),
+          area: "1.890.179",
+          cfr: scope.crashes ? (scope.deaths / scope.crashes) * 100 : 0
+        };
+      }
+      const rows = SAFE_POLDA.filter(safePoldaInScope).filter((row) => scope.polda === "all" || row.provinces.includes(scope.polda));
+      let md = 0;
+      let laka = 0;
+      let people = 0;
+      rows.forEach((row) => {
+        const slice = scope.month === "all" ? safePoldaYearSlice(row, scope.year) : safePoldaSlice(row, scope.year, Number(scope.month), true);
+        md += slice.md;
+        laka += slice.laka;
+        people += row.people;
+      });
+      if (kota) {
+        const mix = polresMix(kota);
+        const mixed = applyPolresMix({ md, laka }, kota);
+        md = mixed.md;
+        laka = mixed.laka;
+        people = Math.round(people * mix.share);
+      }
+      const share = SAFE_NATIONAL.people ? people / SAFE_NATIONAL.people : scope.share;
+      return {
+        deaths: md,
+        crashes: laka,
+        people,
+        vehicles: Math.round(SAFE_NATIONAL.vehicles * share),
+        drivers: Math.round(SAFE_NATIONAL.drivers * share),
+        area: idNum(Math.max(1, Math.round(1890179 * share))),
+        cfr: laka ? (md / laka) * 100 : 0
       };
     }
 
@@ -511,7 +599,7 @@
       if (monthHost) monthHost.setAttribute("aria-label", "Trend CFR bulanan tahun " + scope.year);
       paintRateChart(yearHost, yearGroups, 30, (tick) => idDec(tick, 0) + "%", false, [0, 10, 20, 30]);
       paintRateChart(quarterHost, quarterGroups, 0.3, (tick) => idDec(tick, 2), false, [0, 0.1, 0.2, 0.3]);
-      const chartRows = SAFE_POLDA.filter((row) => scope.polda === "all" || row.provinces.includes(scope.polda));
+      const chartRows = SAFE_POLDA.filter(safePoldaInScope).filter((row) => scope.polda === "all" || row.provinces.includes(scope.polda));
       const monthPoints = SAFE_MONTH_LABELS.map((label, index) => {
         let md = 0;
         let laka = 0;
@@ -524,36 +612,65 @@
       });
       paintMonthCfrChart(monthHost, monthPoints, safeTableMonth(scope));
 
+      const stats = safePlaceStats(scope);
       const picked = SAFE_POLDA.find((row) => row.provinces.includes(scope.polda));
       const yearRow = SAFE_YEAR_CFR.find((row) => row.year === scope.year) || SAFE_YEAR_CFR[SAFE_YEAR_CFR.length - 1];
-      const advice = picked ? (picked.md / picked.laka) * 100 : yearRow.fi;
+      const advice = stats.cfr || (picked ? (picked.md / picked.laka) * 100 : yearRow.fi);
       document.getElementById("safeAdviceValue").textContent = idDec(advice, 2) + "%";
       const monthNo = safeTableMonth(scope);
       const monthName = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][monthNo];
       document.getElementById("safeTableTitle").textContent = "Tabel Kinerja Keselamatan " + monthName + " " + scope.year;
       const level = roleLevel(session);
-      const place = level === "kota"
-        ? "Polres " + session.kota
+      const kota = safePlaceKota(scope);
+      const usePolres = level === "kota" || !!kota;
+      const place = usePolres
+        ? polresOfficialName(kota || (session && session.kota))
         : level === "provinsi"
           ? (session.jabatan || "Polda")
           : "Aceh sampai Papua";
       document.getElementById("safeTableScope").textContent = "CFR = MD / Laka · MR per 100.000 penduduk (BPS) · " + place + " · perubahan vs bulan lalu";
+      const unitHead = document.getElementById("safeTableUnit");
+      if (unitHead) unitHead.textContent = usePolres ? "Polres" : "Polda";
 
       const prev = safePrevMonth(scope.year, monthNo);
-      const rows = SAFE_POLDA.map((row) => {
-        const now = safeRates(safePoldaSlice(row, scope.year, monthNo).md, safePoldaSlice(row, scope.year, monthNo).laka, row.people);
-        const before = safeRates(safePoldaSlice(row, prev.year, prev.month).md, safePoldaSlice(row, prev.year, prev.month).laka, row.people);
-        return {
-          ...row,
-          cfr: now.cfr,
-          mr: now.mr,
-          cfrChange: safeChangeLabel(now.cfr, before.cfr),
-          mrChange: safeChangeLabel(now.mr, before.mr)
-        };
-      });
+      let rows;
+      if (usePolres) {
+        const names = level === "kota" && session && session.kota
+          ? [session.kota]
+          : [kota];
+        const poldaRow = SAFE_POLDA.find((row) => row.provinces.includes(scope.polda)) || SAFE_POLDA.filter(safePoldaInScope)[0];
+        rows = (poldaRow ? names.filter(Boolean) : []).map((name) => {
+          const nowSlice = applyPolresMix(safePoldaSlice(poldaRow, scope.year, monthNo, true), name);
+          const beforeSlice = applyPolresMix(safePoldaSlice(poldaRow, prev.year, prev.month, true), name);
+          const people = Math.round((poldaRow.people || 0) * polresMix(name).share);
+          const now = safeRates(nowSlice.md, nowSlice.laka, people);
+          const before = safeRates(beforeSlice.md, beforeSlice.laka, people);
+          return {
+            name: polresOfficialName(name),
+            hit: true,
+            cfr: now.cfr,
+            mr: now.mr,
+            cfrChange: safeChangeLabel(now.cfr, before.cfr),
+            mrChange: safeChangeLabel(now.mr, before.mr)
+          };
+        });
+      } else {
+        rows = SAFE_POLDA.filter(safePoldaInScope).map((row) => {
+          const now = safeRates(safePoldaSlice(row, scope.year, monthNo).md, safePoldaSlice(row, scope.year, monthNo).laka, row.people);
+          const before = safeRates(safePoldaSlice(row, prev.year, prev.month).md, safePoldaSlice(row, prev.year, prev.month).laka, row.people);
+          return {
+            name: row.name,
+            hit: row.provinces.includes(scope.polda),
+            cfr: now.cfr,
+            mr: now.mr,
+            cfrChange: safeChangeLabel(now.cfr, before.cfr),
+            mrChange: safeChangeLabel(now.mr, before.mr)
+          };
+        });
+      }
       const body = document.getElementById("safePoldaBody");
       body.innerHTML = rows.map((row) => {
-        const on = row.provinces.includes(scope.polda);
+        const on = row.hit;
         return `<tr data-hit="${on ? "1" : "0"}" class="border-b border-slate-100 ${on ? "bg-sky-100 font-semibold text-slate-900" : "text-slate-700"}">
           <td class="px-3 py-1.5">${esc(row.name)}</td>
           <td class="px-2 py-1.5 text-right tabular-nums">${idDec(row.cfr, 1)}%</td>
@@ -569,34 +686,38 @@
 
     function paintSafePanel() {
       const scope = safeScope();
+      const stats = safePlaceStats(scope);
       const tab = SAFE_TABS[safeTab];
-      const cfr = scope.crashes ? (scope.deaths / scope.crashes) * 100 : 0;
-      const perPeople = scope.deaths / SAFE_NATIONAL.people * 100000;
-      const perVehicles = scope.deaths / SAFE_NATIONAL.vehicles * 10000;
+      const perPeople = stats.people ? stats.deaths / stats.people * 100000 : 0;
+      const perVehicles = stats.vehicles ? stats.deaths / stats.vehicles * 10000 : 0;
       const reduction = scope.year === 2026 ? 18 : scope.year === 2025 ? 9 : 4;
-      let value = cfr.toFixed(2).replace(".", ",") + "%";
+      let value = stats.cfr.toFixed(2).replace(".", ",") + "%";
       if (safeTab === "reduction") value = "−" + reduction + "%";
       if (safeTab === "populasi") value = perPeople.toFixed(2).replace(".", ",");
       if (safeTab === "kendaraan") value = perVehicles.toFixed(2).replace(".", ",");
-      const prefix = scope.polda === "all" ? String(scope.year) : scope.polda;
-      document.getElementById("safePanelKicker").textContent = tab.kicker.replace("2026", prefix);
+      const updated = document.getElementById("safeUpdated");
+      if (updated) {
+        const end = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+        updated.textContent = "1 Januari – " + end;
+      }
+      document.getElementById("safePanelKicker").textContent = tab.kicker.replace("2026", safeKickerPlace(scope));
       document.getElementById("safePanelTitle").textContent = tab.title;
       document.getElementById("safePanelValue").textContent = value;
       document.getElementById("safePanelNote").textContent = tab.note;
-      document.getElementById("safeDeathLine").textContent = idNum(scope.deaths) + " jiwa";
-      document.getElementById("safeCrashLine").textContent = idNum(scope.crashes) + " kasus";
+      document.getElementById("safeDeathLine").textContent = idNum(stats.deaths) + " jiwa";
+      document.getElementById("safeCrashLine").textContent = idNum(stats.crashes) + " kasus";
       const level = roleLevel(session);
-      const people = Math.round(SAFE_NATIONAL.people * scope.share);
-      const vehicles = Math.round(SAFE_NATIONAL.vehicles * scope.share);
-      const drivers = Math.round(SAFE_NATIONAL.drivers * scope.share);
-      const area = scope.share === 1 ? "1.890.179" : idNum(Math.max(1, Math.round(1890179 * scope.share)));
-      const coverage = level === "nasional" ? "Nasional" : (session && (session.jabatan || scopeLabel(session))) || "Wilayah tugas";
+      const coverage = level === "nasional" && scope.polda === "all"
+        ? "Nasional"
+        : level === "kota" && session && session.kota
+          ? polresOfficialName(session.kota)
+          : (session && (session.jabatan || scopeLabel(session))) || "Wilayah tugas";
       document.getElementById("safePanelFacts").innerHTML = `
         <p>Cakupan : <strong>${esc(coverage)}</strong></p>
-        <p>Luas Wilayah : <strong>${area} km²</strong> (Sumber Data : BPS)</p>
-        <p>Jumlah Penduduk : <strong>${idNum(people)} jiwa</strong></p>
-        <p>Jumlah Kendaraan : <strong>${idNum(vehicles)} unit</strong></p>
-        <p>Jumlah Pengemudi : <strong>${idNum(drivers)} jiwa</strong></p>`;
+        <p>Luas Wilayah : <strong>${stats.area} km²</strong> (Sumber Data : BPS)</p>
+        <p>Jumlah Penduduk : <strong>${idNum(stats.people)} jiwa</strong></p>
+        <p>Jumlah Kendaraan : <strong>${idNum(stats.vehicles)} unit</strong></p>
+        <p>Jumlah Pengemudi : <strong>${idNum(stats.drivers)} jiwa</strong></p>`;
       document.getElementById("safeDefTitle").textContent = tab.ask;
       document.getElementById("safeDefLead").textContent = tab.lead;
       document.getElementById("safeDefNote").textContent = tab.more;
@@ -629,13 +750,21 @@
       applyDataScope();
     }
 
+    function polresNamesFor(polda) {
+      if (!polda || polda === "all") return [];
+      if (polda === "Jakarta Raya") return METRO_KOTA.slice();
+      const fromMaster = (masterCatalog.kota || [])
+        .filter((row) => row.status !== "Nonaktif" && poldaKey(row.provinsi) === polda)
+        .map((row) => row.name);
+      if (fromMaster.length) return fromMaster;
+      return POLRES_BY_POLDA[polda] || [];
+    }
+
     function fillSafePolres() {
       const polda = document.getElementById("safePolda").value;
       const select = document.getElementById("safePolres");
       const level = roleLevel(session);
-      const names = polda === "all"
-        ? ["Semua"]
-        : ["Semua"].concat(POLRES_BY_POLDA[polda] || ["Polresta", "Polres Kota", "Polres Kabupaten"]);
+      const names = polda === "all" ? ["Semua"] : ["Semua"].concat(polresNamesFor(polda));
       select.innerHTML = names.map((name) => `<option value="${name === "Semua" ? "all" : esc(name)}">${esc(name)}</option>`).join("");
       if (level === "kota" && session && session.kota) {
         if (![...select.options].some((option) => option.value === session.kota)) {
@@ -663,6 +792,7 @@
           select.insertBefore(option, select.firstChild);
         }
         select.disabled = false;
+        select.value = "all";
         fillSafePolres();
       } else if (session) {
         if (allOption) allOption.remove();
@@ -1282,7 +1412,6 @@
       if (!input.files.length) note.classList.add("hidden");
     });
     document.getElementById("surveyGps").addEventListener("click", () => {
-      const input = document.getElementById("surveyCoord");
       const note = document.getElementById("surveyGpsMsg");
       if (!navigator.geolocation) {
         note.textContent = "Perangkat ini tidak bisa mengambil koordinat.";
@@ -1290,8 +1419,7 @@
       }
       note.textContent = "Mencari koordinat...";
       navigator.geolocation.getCurrentPosition((position) => {
-        input.value = position.coords.latitude.toFixed(6) + ", " + position.coords.longitude.toFixed(6);
-        note.textContent = "Koordinat terisi dari perangkat.";
+        fillSurveyFromGps(position.coords.latitude, position.coords.longitude);
       }, () => {
         note.textContent = "Lokasi tidak bisa diambil. Izinkan akses lokasi, lalu coba lagi.";
       });
@@ -1316,6 +1444,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             officer: session ? session.name : "",
+            userId: session ? session.id : "",
             polda: document.getElementById("surveyPolda").value,
             polres: document.getElementById("surveyPolres").value,
             poldaKey: session ? (session.polda || poldaKey(session.provinsi) || "") : "",
@@ -1349,6 +1478,11 @@
       document.getElementById("surveyResult").scrollIntoView({ block: "nearest" });
     });
     document.getElementById("surveyRows").addEventListener("click", (event) => {
+      const photo = event.target.closest("[data-survey-photo]");
+      if (photo) {
+        openSurveyPhoto(photo.dataset.surveyPhoto, photo.dataset.surveyPhotoName || "");
+        return;
+      }
       const open = event.target.closest("[data-survey-open]");
       const del = event.target.closest("[data-survey-del]");
       if (open) {
@@ -1359,6 +1493,8 @@
       }
       if (del) {
         const id = Number(del.dataset.surveyDel);
+        const row = surveyReports.find((item) => item.id === id);
+        if (session && session.role === "Operator" && row && row.userId && row.userId !== session.id) return;
         fetch("/api/reports/" + id, { method: "DELETE" }).then((response) => {
           if (!response.ok) return;
           surveyReports = surveyReports.filter((item) => item.id !== id);

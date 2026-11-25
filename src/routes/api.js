@@ -66,6 +66,75 @@ router.post("/logout", (req, res) => {
   res.json({ ok: true });
 });
 
+function nominatimHeaders() {
+  return { "User-Agent": "ARSY/1.0 (halo@arsy.id)", Accept: "application/json" };
+}
+
+function roadFromNominatim(data) {
+  const addr = (data && data.address) || {};
+  return addr.road || addr.pedestrian || addr.residential || addr.highway || data.name || "";
+}
+
+router.get("/geo/reverse", async (req, res) => {
+  if (!users.readSession(req)) {
+    res.status(401).json({ error: "Masuk dulu." });
+    return;
+  }
+  const lat = Number(req.query.lat);
+  const lng = Number(req.query.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+    res.status(400).json({ error: "Koordinat tidak valid." });
+    return;
+  }
+  try {
+    const upstream = await fetch(
+      "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + encodeURIComponent(lat) + "&lon=" + encodeURIComponent(lng) + "&accept-language=id",
+      { headers: nominatimHeaders() }
+    );
+    const data = await upstream.json();
+    const road = roadFromNominatim(data);
+    const display = String((data && data.display_name) || "");
+    res.json({ road: road || display.split(",")[0] || "", display });
+  } catch (error) {
+    res.status(502).json({ error: "Nama jalan belum bisa dicari." });
+  }
+});
+
+router.get("/geo/search", async (req, res) => {
+  if (!users.readSession(req)) {
+    res.status(401).json({ error: "Masuk dulu." });
+    return;
+  }
+  const query = text(req.query.q, 180);
+  if (!query) {
+    res.status(400).json({ error: "Tulis nama jalan atau tempat." });
+    return;
+  }
+  try {
+    const upstream = await fetch(
+      "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=id&q=" + encodeURIComponent(query) + "&accept-language=id",
+      { headers: nominatimHeaders() }
+    );
+    const rows = await upstream.json();
+    const hit = Array.isArray(rows) && rows[0];
+    if (!hit) {
+      res.status(404).json({ error: "Lokasi tidak ditemukan." });
+      return;
+    }
+    const lat = Number(hit.lat);
+    const lng = Number(hit.lon);
+    const display = String(hit.display_name || "");
+    res.json({
+      lat,
+      lng,
+      road: roadFromNominatim(hit) || hit.name || display.split(",")[0] || query,
+      display
+    });
+  } catch (error) {
+    res.status(502).json({ error: "Pencarian lokasi belum siap." });
+  }
+});
+
 router.get("/register/areas", async (req, res) => {
   try {
     res.json({ areas: await users.registerAreas() });
@@ -240,7 +309,14 @@ router.get("/state", async (req, res) => {
   } catch (error) {
     grants = data.grants;
   }
-  res.json({ reports: data.reports, grants });
+  let reports = Array.isArray(data.reports) ? data.reports : [];
+  try {
+    const user = await users.currentPublicUser(req);
+    reports = user ? reports.filter((row) => users.reportVisible(user, row)) : [];
+  } catch (error) {
+    reports = [];
+  }
+  res.json({ reports, grants });
 });
 
 router.put("/grants", async (req, res) => {
@@ -259,6 +335,11 @@ router.put("/grants", async (req, res) => {
 });
 
 router.post("/reports", async (req, res) => {
+  const user = await users.currentPublicUser(req);
+  if (!user) {
+    res.status(401).json({ error: "Masuk dulu." });
+    return;
+  }
   const body = req.body || {};
   const photos = Array.isArray(body.photos) ? body.photos.slice(0, 3) : [];
   if (!photos.length) {
@@ -274,11 +355,12 @@ router.post("/reports", async (req, res) => {
   const report = {
     id: Date.now(),
     at: new Date().toISOString(),
-    officer: text(body.officer, 160),
+    userId: user.id,
+    officer: user.name,
     polda: text(body.polda, 120),
     polres: text(body.polres, 120),
-    poldaKey: text(body.poldaKey, 80),
-    kota: text(body.kota, 80),
+    poldaKey: user.polda || text(body.poldaKey, 80),
+    kota: user.kota || text(body.kota, 80),
     giat: text(body.giat, 80),
     tingkat: text(body.tingkat, 8),
     rawan: text(body.rawan, 80),
@@ -302,18 +384,29 @@ router.post("/reports", async (req, res) => {
 });
 
 router.delete("/reports/:id", async (req, res) => {
+  const user = await users.currentPublicUser(req);
+  if (!user) {
+    res.status(401).json({ error: "Masuk dulu." });
+    return;
+  }
   const id = Number(req.params.id);
   let removed = null;
   try {
     await store.update((data) => {
-      removed = data.reports.find((item) => item.id === id) || null;
+      const found = data.reports.find((item) => item.id === id) || null;
+      if (!found || !users.reportVisible(user, found)) return;
+      removed = found;
       data.reports = data.reports.filter((item) => item.id !== id);
     });
   } catch (error) {
     res.status(500).json({ error: "Laporan belum terhapus." });
     return;
   }
-  if (removed) removed.photos.forEach((photo) => removePhoto(photo.url));
+  if (!removed) {
+    res.status(404).json({ error: "Laporan tidak ditemukan." });
+    return;
+  }
+  removed.photos.forEach((photo) => removePhoto(photo.url));
   res.json({ ok: true });
 });
 

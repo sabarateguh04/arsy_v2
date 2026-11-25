@@ -46,10 +46,10 @@
       accessRoles().forEach((role) => { grants[role] = {}; });
       menuCatalog().forEach((item) => {
         accessRoles().forEach((role) => {
-          if (role === "Eksekutif 1") grants[role][item.key] = item.group !== "Data Master" && item.key !== "aktifitas";
-          else if (role === "Eksekutif 2") grants[role][item.key] = ["viewMap", "viewKeselamatan", "viewKetertiban", "viewKelancaran"].includes(item.key) || item.group === "Data Sekunder";
-          else if (role === "Eksekutif 3") grants[role][item.key] = ["viewMap", "viewKeselamatan", "viewKeamanan"].includes(item.key);
-          else if (role === "Operator") grants[role][item.key] = item.key === "viewMap" || item.key === "viewKeselamatan";
+          if (role === "Eksekutif 1") grants[role][item.key] = (item.group !== "Data Master" && item.key !== "aktifitas") || item.key === "mobile";
+          else if (role === "Eksekutif 2") grants[role][item.key] = ["viewMap", "viewKeselamatan", "viewKetertiban", "viewKelancaran", "mobile"].includes(item.key) || item.group === "Data Sekunder";
+          else if (role === "Eksekutif 3") grants[role][item.key] = ["viewMap", "viewKeselamatan", "viewKeamanan", "mobile"].includes(item.key);
+          else if (role === "Operator") grants[role][item.key] = item.key === "viewMap" || item.key === "viewKeselamatan" || item.key === "mobile";
           else grants[role][item.key] = false;
         });
       });
@@ -117,8 +117,8 @@
         Admin: "Semua menu dan data nasional bisa dibuka, termasuk pengaturan pengguna dan menu.",
         "Eksekutif 1": "Data nasional seluruh polda. Menu yang tampil mengikuti pengaturan admin.",
         "Eksekutif 2": "Hanya data " + wilayah + ". Angka nasional dan polda lain tidak ditampilkan.",
-        "Eksekutif 3": "Hanya data kota " + (session.kota || wilayah) + ". Data di luar kota ini tidak ditampilkan.",
-        Operator: "Hanya data kota " + (session.kota || wilayah) + ", pada menu yang dibuka untuk petugas."
+        "Eksekutif 3": "Hanya data polres " + (session.kota || wilayah) + ". Data di luar polres ini tidak ditampilkan.",
+        Operator: "Data peta dan keselamatan setingkat polres " + (session.kota || wilayah) + ". Input gangguan hanya laporan Anda sendiri."
       };
       document.getElementById("menuAccountInitial").textContent = initials;
       document.getElementById("menuAccountName").textContent = session.name;
@@ -140,14 +140,34 @@
       document.getElementById("profileNote").textContent = notes[session.role] || "Data yang tampil mengikuti peran dan wilayah akun ini.";
     }
 
-    function markerAllowed(kota) {
+    function sessionPoldaKey(user) {
+      const row = user || session;
+      if (!row) return "";
+      return row.polda || poldaKey(row.provinsi) || "";
+    }
+
+    function kotaPolda(kota) {
+      if (!kota) return "";
+      if (METRO_KOTA.includes(kota)) return "Jakarta Raya";
+      const row = (masterCatalog.kota || []).find((item) => item.name === kota);
+      if (row && row.provinsi) return poldaKey(row.provinsi);
+      return poldaKey(kota);
+    }
+
+    function kotaAllowed(kota) {
+      if (!session) return true;
       const level = roleLevel(session);
-      if (level === "nasional") return true;
+      if (session.role === "Admin" || level === "nasional") return true;
+      const key = sessionPoldaKey();
       if (level === "provinsi") {
-        if ((session.polda || poldaKey(session.provinsi)) === "Jakarta Raya") return METRO_KOTA.includes(kota);
-        return false;
+        if (key === "Jakarta Raya") return METRO_KOTA.includes(kota);
+        return kotaPolda(kota) === key;
       }
       return kota === session.kota;
+    }
+
+    function markerAllowed(kota) {
+      return kotaAllowed(kota);
     }
 
     function applyMapScope() {
@@ -157,7 +177,7 @@
       Object.entries(layerGroups).forEach(([type, items]) => {
         items.forEach((item) => {
           const scoped = item.get && item.get("scoped");
-          const allowed = scoped ? markerAllowed(item.get("kota")) : level !== "kota";
+          const allowed = scoped ? kotaAllowed(item.get("kota")) : level === "nasional";
           const layerOn = document.getElementById("layer" + type).checked;
           item.setMap(allowed && layerOn ? map : null);
           if (scoped && allowed) counts[type] += 1;
@@ -174,4 +194,5 @@
       const lead = document.getElementById("mapInfoLead");
       if (lead) lead.textContent = hintText;
       applyGisScope();
+      fitMapToScope();
     }

@@ -33,6 +33,8 @@ document.querySelectorAll("[data-account]").forEach((button) => {
 document.getElementById("accountLogout").addEventListener("click", () => {
   session = null;
   users = [];
+  mapFitToken = "";
+  surveyReports = [];
   fetch("/api/logout", { method: "POST" }).catch(() => undefined);
   setAccountMenu(false);
   showPage("publicPortal");
@@ -41,7 +43,18 @@ document.getElementById("accountLogout").addEventListener("click", () => {
 async function enterSession(found) {
   if (!menuGrants) menuGrants = buildDefaultGrants();
   session = found;
+  mapFitToken = "";
   await loadCatalog();
+  try {
+    const response = await fetch("/api/state");
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data.reports)) surveyReports = data.reports;
+      if (data.grants && typeof data.grants === "object") applySavedGrants(data.grants);
+    }
+  } catch (error) {
+    /* keep reports from boot */
+  }
   if (session.role === "Admin") await loadUsers();
   activeView = canOpen("viewMap") ? "viewMap" : "viewKeselamatan";
   showPage("operatorDashboard");
@@ -326,6 +339,14 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
+  if (!document.getElementById("surveyPhotoModal").classList.contains("hidden-section")) {
+    closeSurveyPhoto();
+    return;
+  }
+  if (!document.getElementById("surveyMapModal").classList.contains("hidden-section")) {
+    closeSurveyMap();
+    return;
+  }
   if (document.getElementById("safeTableCard") && document.getElementById("safeTableCard").classList.contains("is-table-full")) {
     setSafeTableFull(false);
     return;
